@@ -6,7 +6,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from modules import * 
+from modules import *
 
 class MLP(object):
   """
@@ -17,8 +17,8 @@ class MLP(object):
 
   def __init__(self, n_inputs, n_hidden, n_classes, neg_slope):
     """
-    Initializes MLP object. 
-    
+    Initializes MLP object.
+
     Args:
       n_inputs: number of inputs.
       n_hidden: list of ints, specifies the number of units
@@ -29,7 +29,7 @@ class MLP(object):
                  This number is required in order to specify the
                  output dimensions of the MLP
       neg_slope: negative slope parameter for LeakyReLU
-    
+
     TODO:
     Implement initialization of the network.
     """
@@ -37,21 +37,28 @@ class MLP(object):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    raise NotImplementedError
+    self.n_inputs = n_inputs
+    self.n_hidden = [self.n_inputs] + n_hidden
+    self.n_classes = n_classes
+    self.neg_slope = neg_slope
+    self.net = []
+    for i, h in enumerate(self.n_hidden[:-1]):
+      self.net.extend([LinearModule(self.n_hidden[i], self.n_hidden[i + 1]), LeakyReLUModule(self.neg_slope) ])
+    self.net.extend([LinearModule(self.n_hidden[-1],self.n_classes), SoftMaxModule()])
     ########################
     # END OF YOUR CODE    #
     #######################
 
   def forward(self, x):
     """
-    Performs forward pass of the input. Here an input tensor x is transformed through 
+    Performs forward pass of the input. Here an input tensor x is transformed through
     several layer transformations.
-    
+
     Args:
       x: input to the network
     Returns:
       out: outputs of the network
-    
+
     TODO:
     Implement forward pass of the network.
     """
@@ -59,7 +66,10 @@ class MLP(object):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    raise NotImplementedError
+
+    for net in self.net:
+      x = net.forward(x)
+    out = x
     ########################
     # END OF YOUR CODE    #
     #######################
@@ -68,19 +78,20 @@ class MLP(object):
 
   def backward(self, dout):
     """
-    Performs backward pass given the gradients of the loss. 
+    Performs backward pass given the gradients of the loss.
 
     Args:
       dout: gradients of the loss
-    
+
     TODO:
     Implement backward pass of the network.
     """
-    
+
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    raise NotImplementedError
+    for net in self.net[::-1]:
+      dout = net.backward(dout)
     ########################
     # END OF YOUR CODE    #
     #######################

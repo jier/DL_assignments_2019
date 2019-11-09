@@ -6,6 +6,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import torch.nn as nn
+
 class MLP(nn.Module):
   """
   This class implements a Multi-layer Perceptron in PyTorch.
@@ -15,8 +17,8 @@ class MLP(nn.Module):
 
   def __init__(self, n_inputs, n_hidden, n_classes, neg_slope):
     """
-    Initializes MLP object. 
-    
+    Initializes MLP object.
+
     Args:
       n_inputs: number of inputs.
       n_hidden: list of ints, specifies the number of units
@@ -35,21 +37,34 @@ class MLP(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    raise NotImplementedError
+    super(MLP, self).__init__()
+
+    self.n_classes = n_classes
+    self.neg_slope = neg_slope
+    self.n_inputs = n_inputs
+
+    self.n_hidden = [self.n_inputs] + n_hidden
+    self.net = []
+    for i, h in enumerate(self.n_hidden[:-1]):
+      self.net.extend([nn.Linear(self.n_hidden[i], self.n_hidden[i + 1]), nn.LeakyReLU(negative_slope=self.neg_slope)])
+
+    # No softmax, included in CrossEntropyLoss
+    self.net.extend([nn.Linear(self.n_hidden[-1],self.n_classes)])
+    self.net = nn.Sequential(*self.net)
     ########################
     # END OF YOUR CODE    #
     #######################
 
   def forward(self, x):
     """
-    Performs forward pass of the input. Here an input tensor x is transformed through 
+    Performs forward pass of the input. Here an input tensor x is transformed through
     several layer transformations.
-    
+
     Args:
       x: input to the network
     Returns:
       out: outputs of the network
-    
+
     TODO:
     Implement forward pass of the network.
     """
@@ -57,7 +72,11 @@ class MLP(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    raise NotImplementedError
+
+    for net in self.net:
+      x = net(x)
+
+    out = x
     ########################
     # END OF YOUR CODE    #
     #######################

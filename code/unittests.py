@@ -65,7 +65,7 @@ class TestLosses(unittest.TestCase):
   def test_crossentropy_loss(self):
     np.random.seed(42)
     rel_error_max = 1e-5
-    
+
     for test_num in range(10):
       N = np.random.choice(range(1, 100))
       C = np.random.choice(range(1, 10))
@@ -96,7 +96,7 @@ class TestLayers(unittest.TestCase):
       dout = np.random.randn(N, C)
 
       layer = LinearModule(D, C)
-      
+
       out = layer.forward(x)
       dx = layer.backward(dout)
       dw = layer.grads['weight']
@@ -117,13 +117,13 @@ class TestLayers(unittest.TestCase):
       dout = np.random.randn(*x.shape)
 
       layer = LeakyReLUModule(0)
-      
+
       out = layer.forward(x)
       dx = layer.backward(dout)
       dx_num = eval_numerical_gradient_array(lambda xx: layer.forward(xx), x, dout)
 
       self.assertLess(rel_error(dx, dx_num), rel_error_max)
-  
+
   def test_softmax_backward(self):
     np.random.seed(42)
     rel_error_max = 1e-5
@@ -135,7 +135,7 @@ class TestLayers(unittest.TestCase):
       dout = np.random.randn(*x.shape)
 
       layer = SoftMaxModule()
-      
+
       out = layer.forward(x)
       dx = layer.backward(dout)
       dx_num = eval_numerical_gradient_array(lambda xx: layer.forward(xx), x, dout)
@@ -150,5 +150,5 @@ if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestLayers)
   unittest.TextTestRunner(verbosity=2).run(suite)
 
-  suite = unittest.TestLoader().loadTestsFromTestCase(TestBatchNorm)
-  unittest.TextTestRunner(verbosity=3).run(suite)
+  # suite = unittest.TestLoader().loadTestsFromTestCase(TestBatchNorm)
+  # unittest.TextTestRunner(verbosity=3).run(suite)

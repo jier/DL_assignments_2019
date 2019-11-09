@@ -30,7 +30,7 @@ def accuracy(predictions, targets):
   """
   Computes the prediction accuracy, i.e. the average of correct predictions
   of the network.
-  
+
   Args:
     predictions: 2D float array of size [batch_size, n_classes]
     labels: 2D int array of size [batch_size, n_classes]
@@ -39,7 +39,7 @@ def accuracy(predictions, targets):
   Returns:
     accuracy: scalar float, the accuracy of predictions,
               i.e. the average correct predictions over the whole batch
-  
+
   TODO:
   Implement accuracy computation.
   """
@@ -47,7 +47,8 @@ def accuracy(predictions, targets):
   ########################
   # PUT YOUR CODE HERE  #
   #######################
-  raise NotImplementedError
+  # accuracy = total_correct / total(batch size)
+  accuracy = (predictions.argmax(1) == targets.argmax(1)).sum() / predictions.shape[0]
   ########################
   # END OF YOUR CODE    #
   #######################
@@ -56,7 +57,7 @@ def accuracy(predictions, targets):
 
 def train():
   """
-  Performs training and evaluation of MLP model. 
+  Performs training and evaluation of MLP model.
 
   TODO:
   Implement training and evaluation of MLP model. Evaluate your model on the whole test set each eval_freq iterations.
@@ -80,7 +81,49 @@ def train():
   ########################
   # PUT YOUR CODE HERE  #
   #######################
-  raise NotImplementedError
+  cifar10 = cifar10_utils.get_cifar10(data_dir=DATA_DIR_DEFAULT)
+  train_data = cifar10['train']
+
+  # 60000 x 3 x 32 x32 -> 60000 x 3072, input vector 3072
+  n_inputs = train_data.images.reshape(train_data.images.shape[0], -1).shape[1]
+  n_hidden = dnn_hidden_units
+  n_classes = train_data.labels.shape[1]
+
+  print(f"n_inputs {n_inputs}, n_classes {n_classes}")
+  net = MLP(n_inputs, n_hidden, n_classes, neg_slope=neg_slope)
+  loss = CrossEntropyModule()
+
+  rloss = 0
+  print('[DEBUG] start training')
+  for i in range(0, MAX_STEPS_DEFAULT):
+    x, y = cifar10['train'].next_batch(BATCH_SIZE_DEFAULT)
+    x = x.reshape(x.shape[0], -1)
+
+    out = net.forward(x)
+    loss_forward = loss.forward(out, y)
+
+    loss_grad = loss.backward(out, y)
+
+    net.backward(loss_grad)
+
+    for n in net.net:
+      if hasattr(n, 'params'):
+        n.params['weight'] = n.params['weight'] - LEARNING_RATE_DEFAULT * n.grads['weight']
+        n.params['bias'] = n.params['bias'] - LEARNING_RATE_DEFAULT * n.grads['bias']
+
+    rloss += loss_forward
+    if  i % EVAL_FREQ_DEFAULT == 0:
+      train_accuracy = accuracy(out, y)
+
+      testX, testY = cifar10['test'].images, cifar10['test'].labels
+      testX = testX.reshape(testX.shape[0], -1)
+
+      testOut = net.forward(testX)
+      testLoss = loss.forward(testOut, testY)
+
+      test_accuracy = accuracy(testOut, testY)
+
+      print(f'iter {i}, avg loss train {rloss/(i + 1)}, test loss {testLoss}, train acc {train_accuracy}, test acc {test_accuracy}')
   ########################
   # END OF YOUR CODE    #
   #######################
