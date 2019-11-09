@@ -3,8 +3,8 @@ import os
 learning_rate = [2e-3, 2e-4, 2e-5]
 max_steps = [1500, 3000, 4500, 6000]
 batch_size = [50, 100, 200, 250]
-dnn_hidden_units = ['100,200, 200, 400, 200, 200, 100']
-optimizer = ['Adam','AdamW','Adagrad','Adadelta','SparseAdam']
+dnn_hidden_units = ['100','100,200,100', '200, 400, 200', '200, 200']
+optimizer = ['Adam','Adamax','Adagrad','Adadelta','SparseAdam']
 
 for dnn in dnn_hidden_units:
     for lr in learning_rate:

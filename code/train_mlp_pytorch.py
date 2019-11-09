@@ -101,12 +101,18 @@ def train():
 
   params = model.parameters()
 
-  if FLAGS.optimizer == 'SGD':
-    optimizer = torch.optim.SGD(params,lr=FLAGS.learning_rate)
-  elif FLAGS.optimizer == 'Adam':
+  if FLAGS.optimizer == 'Adam':
     optimizer = torch.optim.Adam(params, lr=FLAGS.learning_rate)
+  elif FLAGS.optimizer == 'Adamax':
+    optimizer = torch.optim.Adamax(params, lr=FLAGS.learning_rate)
+  elif FLAGS.optimizer == 'Adagrad':
+    optimizer = torch.optim.Adagrad(params, lr=FLAGS.learning_rate)
+  elif FLAGS.optimizer == 'Adadelta':
+    optimizer = torch.optim.Adadelta(params, lr=FLAGS.learning_rate)
+  elif FLAGS.optimizer == 'SparseAdam':
+    optimizer = torch.optim.SparseAdam(params, lr=FLAGS.learning_rate)
   else:
-    raise Exception("No valid optimizer specified")
+    optimizer = torch.optim.SGD(params,lr=FLAGS.learning_rate)
 
 
   criterion = torch.nn.CrossEntropyLoss()
