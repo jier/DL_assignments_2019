@@ -146,10 +146,16 @@ def train():
           test_out  = model.forward(test_x)
           test_loss = criterion(test_out, test_y.argmax(1))
           test_accuracy = accuracy(test_out, test_y)
-          test_losses.append(test_loss)
+          if device == 'cpu':
+            test_losses.append(test_loss)
+          else:
+            test_losses.append(test_loss.cpu().data.numpy())
+
           test_accuracys.append(test_accuracy)
         t_acc = np.array(test_accuracys).mean()
+        # if device == 'cpu':
         t_loss = np.array(test_losses).mean()
+
         print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
         if t_acc > best_accuracy:
           best_accuracy = t_acc
