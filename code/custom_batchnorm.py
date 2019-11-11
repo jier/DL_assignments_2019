@@ -37,7 +37,10 @@ class CustomBatchNormAutograd(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-
+    self.gamma = torch.nn.Parameter(torch.ones(n_neurons))
+    self.beta = torch.nn.Parameter(torch.zeros(n_neurons))
+    self.n_neurons = n_neurons
+    self.eps = eps
     ########################
     # END OF YOUR CODE    #
     #######################
@@ -60,7 +63,15 @@ class CustomBatchNormAutograd(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
+    assert input.shape[1] == self.n_neurons, 'Input size ({}) does not match ({}) neurons shape'.format(input.shape[1], self.n_neurons)
 
+    u_i = input.mean(dim=0)
+
+    var_i = input.var(dim=0)
+
+    x_norm = (input - u_i) / (var_i + self.eps).sqrt()
+
+    out = self.gamma * x_norm + self.beta
     ########################
     # END OF YOUR CODE    #
     #######################

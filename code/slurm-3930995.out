@@ -1,0 +1,98 @@
+Requirement already satisfied: torch==1.0.1 in /home/lgpu0119/.local/lib/python3.6/site-packages (from -r requirements.txt (line 2))
+Requirement already satisfied: torchvision==0.2.2 in /home/lgpu0119/.local/lib/python3.6/site-packages (from -r requirements.txt (line 3))
+Requirement already satisfied: pandas==0.24.2 in /home/lgpu0119/.local/lib/python3.6/site-packages (from -r requirements.txt (line 4))
+Requirement already satisfied: matplotlib==3.0.3 in /home/lgpu0119/.local/lib/python3.6/site-packages (from -r requirements.txt (line 5))
+Requirement already satisfied: numpy==1.16.2 in /home/lgpu0119/.local/lib/python3.6/site-packages (from -r requirements.txt (line 6))
+Requirement already satisfied: scipy==1.2.1 in /home/lgpu0119/.local/lib/python3.6/site-packages (from -r requirements.txt (line 7))
+Requirement already satisfied: tqdm==4.19.9 in /home/lgpu0119/.local/lib/python3.6/site-packages (from torchvision==0.2.2->-r requirements.txt (line 3))
+Requirement already satisfied: pillow>=4.1.1 in /home/lgpu0119/.local/lib/python3.6/site-packages (from torchvision==0.2.2->-r requirements.txt (line 3))
+Requirement already satisfied: six in /sara/eb/Debian9/Python/3.6.3-foss-2017b/lib/python3.6/site-packages/six-1.11.0-py3.6.egg (from torchvision==0.2.2->-r requirements.txt (line 3))
+Requirement already satisfied: python-dateutil>=2.5.0 in /sara/eb/Debian9/Python/3.6.3-foss-2017b/lib/python3.6/site-packages/python_dateutil-2.6.1-py3.6.egg (from pandas==0.24.2->-r requirements.txt (line 4))
+Requirement already satisfied: pytz>=2011k in /sara/eb/Debian9/Python/3.6.3-foss-2017b/lib/python3.6/site-packages/pytz-2017.3-py3.6.egg (from pandas==0.24.2->-r requirements.txt (line 4))
+Requirement already satisfied: kiwisolver>=1.0.1 in /home/lgpu0119/.local/lib/python3.6/site-packages (from matplotlib==3.0.3->-r requirements.txt (line 5))
+Requirement already satisfied: cycler>=0.10 in /home/lgpu0119/.local/lib/python3.6/site-packages (from matplotlib==3.0.3->-r requirements.txt (line 5))
+Requirement already satisfied: pyparsing!=2.0.4,!=2.1.2,!=2.1.6,>=2.0.1 in /sara/eb/Debian9/Python/3.6.3-foss-2017b/lib/python3.6/site-packages/pyparsing-2.2.0-py3.6.egg (from matplotlib==3.0.3->-r requirements.txt (line 5))
+Requirement already satisfied: setuptools in /home/lgpu0119/.local/lib/python3.6/site-packages (from kiwisolver>=1.0.1->matplotlib==3.0.3->-r requirements.txt (line 5))
+You are using pip version 9.0.1, however version 19.3.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+dnn_hidden_units : 100,200,100
+learning_rate : 0.002
+max_steps : 1500
+batch_size : 100
+eval_freq : 100
+data_dir : ./cifar10/cifar-10-batches-py
+neg_slope : 0.02
+optimizer : Adam
+[DEBUG], Device  cuda:0
+n_inputs 3072, n_classes 10
+[DEBUG] start training
+iter 0, train_loss_avg 5.161007881164551, test_loss_avg 10.211703300476074, train_acc 0.08999999612569809, test_acc_avg 0.12559999682878453
+iter 100, train_loss_avg 3.2167811075059496, test_loss_avg 1.9130381345748901, train_acc 0.29999998211860657, test_acc_avg 0.33089999251564345
+iter 200, train_loss_avg 2.540762799889294, test_loss_avg 1.788397192955017, train_acc 0.429999977350235, test_acc_avg 0.3675999910235405
+iter 300, train_loss_avg 2.2685448937241817, test_loss_avg 1.713122844696045, train_acc 0.4599999785423279, test_acc_avg 0.38139999039967853
+iter 400, train_loss_avg 2.1289429022486965, test_loss_avg 1.6405248641967773, train_acc 0.44999998807907104, test_acc_avg 0.41839998930692673
+iter 500, train_loss_avg 2.0362473714375446, test_loss_avg 1.5851742029190063, train_acc 0.5199999809265137, test_acc_avg 0.4468999883731206
+iter 600, train_loss_avg 1.964798999110395, test_loss_avg 1.637247920036316, train_acc 0.4899999797344208, test_acc_avg 0.41449998901287716
+iter 700, train_loss_avg 1.9125424322490174, test_loss_avg 1.6363555192947388, train_acc 0.4699999988079071, test_acc_avg 0.4371999886433284
+iter 800, train_loss_avg 1.870383661338006, test_loss_avg 1.5632766485214233, train_acc 0.44999998807907104, test_acc_avg 0.4393999881744385
+iter 900, train_loss_avg 1.8344368286323336, test_loss_avg 1.5738788843154907, train_acc 0.4899999797344208, test_acc_avg 0.43879998832941053
+iter 1000, train_loss_avg 1.8042405450737082, test_loss_avg 1.51763916015625, train_acc 0.38999998569488525, test_acc_avg 0.4622999877134959
+iter 1100, train_loss_avg 1.77412245080863, test_loss_avg 1.5444127321243286, train_acc 0.4099999964237213, test_acc_avg 0.46459998818238574
+iter 1200, train_loss_avg 1.7537759253623384, test_loss_avg 1.5668503046035767, train_acc 0.4399999976158142, test_acc_avg 0.45049998797972995
+iter 1300, train_loss_avg 1.733883007410212, test_loss_avg 1.5018390417099, train_acc 0.47999998927116394, test_acc_avg 0.46689998773733776
+iter 1400, train_loss_avg 1.7150819285438368, test_loss_avg 1.5031683444976807, train_acc 0.47999998927116394, test_acc_avg 0.46659998764594396
+Best Accuracy 0.46689998773733776
+dnn_hidden_units : 100,200,100
+learning_rate : 0.002
+max_steps : 1500
+batch_size : 100
+eval_freq : 100
+data_dir : ./cifar10/cifar-10-batches-py
+neg_slope : 0.02
+optimizer : Adamax
+[DEBUG], Device  cuda:0
+n_inputs 3072, n_classes 10
+[DEBUG] start training
+iter 0, train_loss_avg 5.161007881164551, test_loss_avg 10.211440086364746, train_acc 0.08999999612569809, test_acc_avg 0.12569999684269229
+iter 100, train_loss_avg 3.113485162801082, test_loss_avg 1.9874463081359863, train_acc 0.35999998450279236, test_acc_avg 0.3142999924321969
+iter 200, train_loss_avg 2.53624333433844, test_loss_avg 1.8502236604690552, train_acc 0.2800000011920929, test_acc_avg 0.3515999919672807
+iter 300, train_loss_avg 2.294524552814192, test_loss_avg 1.7753797769546509, train_acc 0.44999998807907104, test_acc_avg 0.3764999912083149
+iter 400, train_loss_avg 2.1718958369514296, test_loss_avg 1.738351583480835, train_acc 0.41999998688697815, test_acc_avg 0.3906999902526538
+iter 500, train_loss_avg 2.088891982556341, test_loss_avg 1.6926653385162354, train_acc 0.4399999976158142, test_acc_avg 0.40989998946587247
+iter 600, train_loss_avg 2.0171437878378615, test_loss_avg 1.6934961080551147, train_acc 0.4399999976158142, test_acc_avg 0.40399998950958255
+iter 700, train_loss_avg 1.965373897178367, test_loss_avg 1.643936038017273, train_acc 0.4899999797344208, test_acc_avg 0.42519998906056083
+iter 800, train_loss_avg 1.9258712677473433, test_loss_avg 1.6650245189666748, train_acc 0.4699999988079071, test_acc_avg 0.4127999892334143
+iter 900, train_loss_avg 1.892234425036677, test_loss_avg 1.640096664428711, train_acc 0.4699999988079071, test_acc_avg 0.4229999892512957
+iter 1000, train_loss_avg 1.864362219115952, test_loss_avg 1.6267532110214233, train_acc 0.429999977350235, test_acc_avg 0.43529998819033305
+iter 1100, train_loss_avg 1.83569362540336, test_loss_avg 1.6249885559082031, train_acc 0.3499999940395355, test_acc_avg 0.42869998880227406
+iter 1200, train_loss_avg 1.8142444594118816, test_loss_avg 1.6098484992980957, train_acc 0.5, test_acc_avg 0.43229998836914696
+iter 1300, train_loss_avg 1.7947201419114884, test_loss_avg 1.5909371376037598, train_acc 0.44999998807907104, test_acc_avg 0.44019998850425085
+iter 1400, train_loss_avg 1.7766451718209897, test_loss_avg 1.5721626281738281, train_acc 0.44999998807907104, test_acc_avg 0.44469998830556867
+Best Accuracy 0.44469998830556867
+dnn_hidden_units : 100,200,100
+learning_rate : 0.002
+max_steps : 1500
+batch_size : 100
+eval_freq : 100
+data_dir : ./cifar10/cifar-10-batches-py
+neg_slope : 0.02
+optimizer : Adagrad
+[DEBUG], Device  cuda:0
+n_inputs 3072, n_classes 10
+[DEBUG] start training
+iter 0, train_loss_avg 5.161007881164551, test_loss_avg 10.21142292022705, train_acc 0.08999999612569809, test_acc_avg 0.12569999684269229
+iter 100, train_loss_avg 2.711583682806185, test_loss_avg 1.914484977722168, train_acc 0.3799999952316284, test_acc_avg 0.3454999918341637
+iter 200, train_loss_avg 2.3007084979346737, test_loss_avg 1.7796093225479126, train_acc 0.32999998331069946, test_acc_avg 0.3765999911924203
+iter 300, train_loss_avg 2.117675416889381, test_loss_avg 1.7281341552734375, train_acc 0.3999999761581421, test_acc_avg 0.39479999014735223
+iter 400, train_loss_avg 2.0224406457601343, test_loss_avg 1.6961826086044312, train_acc 0.429999977350235, test_acc_avg 0.4080999891360601
+iter 500, train_loss_avg 1.9592528357477246, test_loss_avg 1.6495803594589233, train_acc 0.4699999988079071, test_acc_avg 0.41939998904863995
+iter 600, train_loss_avg 1.8972857383245636, test_loss_avg 1.6400024890899658, train_acc 0.5, test_acc_avg 0.4209999884565671
+iter 700, train_loss_avg 1.8507246054528272, test_loss_avg 1.6189014911651611, train_acc 0.44999998807907104, test_acc_avg 0.4342999883294106
+iter 800, train_loss_avg 1.8153524467263478, test_loss_avg 1.6094225645065308, train_acc 0.4899999797344208, test_acc_avg 0.4317999888857206
+iter 900, train_loss_avg 1.785489706564426, test_loss_avg 1.608091950416565, train_acc 0.47999998927116394, test_acc_avg 0.43529998828967414
+iter 1000, train_loss_avg 1.7623200449910197, test_loss_avg 1.5757317543029785, train_acc 0.47999998927116394, test_acc_avg 0.4426999880671501
+iter 1100, train_loss_avg 1.7347339509726654, test_loss_avg 1.579911470413208, train_acc 0.4099999964237213, test_acc_avg 0.4461999886234601
+iter 1200, train_loss_avg 1.7130624200779632, test_loss_avg 1.573945164680481, train_acc 0.4599999785423279, test_acc_avg 0.44629998819033306
+iter 1300, train_loss_avg 1.6944327230732044, test_loss_avg 1.5839651823043823, train_acc 0.5099999904632568, test_acc_avg 0.441199988424778
+iter 1400, train_loss_avg 1.6772460389528676, test_loss_avg 1.5477772951126099, train_acc 0.5, test_acc_avg 0.45769998772939047
+Best Accuracy 0.45769998772939047
