@@ -67,7 +67,7 @@ class CustomBatchNormAutograd(nn.Module):
 
     u_i = input.mean(dim=0)
 
-    var_i = input.var(dim=0)
+    var_i = input.var(dim=0, unbiased=False)
 
     x_norm = (input - u_i) / (var_i + self.eps).sqrt()
 
@@ -125,7 +125,12 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-
+    batch_mean = input.mean(dim=0)
+    batch_var = input.var(dim=0, unbiased=False)
+    denominator = (batch_var + eps).sqrt()
+    batch_norm = (input - batch_mean) / denominator
+    out = gamma * batch_norm + beta
+    ctx.save_for_backward(batch_norm, batch_mean, denominator, gamma )
     ########################
     # END OF YOUR CODE    #
     #######################
@@ -153,6 +158,20 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
+    grad_input, grad_gamma, grad_beta = None
+    # (x, gamma, beta)
+    batch_normalised, batch_mean, denominator, gamma = ctx.saved_tensors()
+
+    #Gamma
+    if ctx.needs_input_grad[1]:
+      grad_gamma = torch.sum(grad_output * batch_normalised, dim=0 )
+
+    #Beta
+    if ctx.needs_input_grad[2]:
+      grad_beta = torch.sum(grad_output, dim=0)
+
+    if ctx.needs_input_grad[0]:
+      normalised_batch_size = grad_output.shape[0]
 
     ########################
     # END OF YOUR CODE    #

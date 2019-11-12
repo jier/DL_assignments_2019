@@ -81,7 +81,7 @@ def train():
   # Get negative slope parameter for LeakyReLU
   neg_slope = FLAGS.neg_slope
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-  print("[DEBUG], Device ", device)
+  # print("[DEBUG], Device ", device)
 
   ########################
   # PUT YOUR CODE HERE  #
@@ -94,7 +94,7 @@ def train():
   n_hidden = dnn_hidden_units
   n_classes = train_data.labels.shape[1]
 
-  print(f"n_inputs {n_inputs}, n_classes {n_classes}")
+  # print(f"[DEBUG] n_inputs {n_inputs}, n_classes {n_classes}")
 
   model = MLP(n_inputs, n_hidden, n_classes, FLAGS.neg_slope)
   model.to(device)
@@ -118,7 +118,7 @@ def train():
   criterion = torch.nn.CrossEntropyLoss()
   rloss = 0
   best_accuracy = 0
-  print('[DEBUG] start training')
+  # print('[DEBUG] start training')
 
   for i in range(0, FLAGS.max_steps):
     x, y = cifar10['train'].next_batch(FLAGS.batch_size)
@@ -156,11 +156,12 @@ def train():
         # if device == 'cpu':
         t_loss = np.array(test_losses).mean()
 
-        print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
+        # print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
         if t_acc > best_accuracy:
           best_accuracy = t_acc
 
-  print(f"Best Accuracy {best_accuracy}",flush=True)
+  # print(f"Best Accuracy {best_accuracy}",flush=True)
+  print(best_accuracy)
 
 
 
@@ -180,7 +181,7 @@ def main():
   Main function
   """
   # Print all Flags to confirm parameter settings
-  print_flags()
+  # print_flags()
 
   if not os.path.exists(FLAGS.data_dir):
     os.makedirs(FLAGS.data_dir)
