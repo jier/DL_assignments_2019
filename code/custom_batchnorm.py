@@ -160,9 +160,9 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-    grad_input, grad_gamma, grad_beta = None
+    grad_input = grad_gamma = grad_beta = None
     # (x, gamma, beta)
-    batch_normalised, batch_mean, denominator, input_s = ctx.saved_tensors()
+    batch_normalised, batch_mean, denominator, input_s = ctx.saved_tensors
     gamma = ctx.gamma
 
 
@@ -179,9 +179,7 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
       grad_1 =  gamma / denominator
       grad_2 = B * grad_output
       grad_3 = (grad_output.sum(dim=0))
-      grad_4 =   ( input_s /(denominator.pow(2))
-
-
+      grad_4 =   ( input_s /(denominator.pow(2)))
       grad_5 =  (grad_output * input_s).sum(dim=0)
 
       grad_input  = (grad_1 * (grad_2 - grad_3 - grad_4 * grad_5))/B
