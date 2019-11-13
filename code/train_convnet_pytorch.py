@@ -11,7 +11,7 @@ import numpy as np
 import os
 from convnet_pytorch import ConvNet
 import cifar10_utils
-
+import torch
 # Default constants
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 32
@@ -28,7 +28,7 @@ def accuracy(predictions, targets):
   """
   Computes the prediction accuracy, i.e. the average of correct predictions
   of the network.
-  
+
   Args:
     predictions: 2D float array of size [batch_size, n_classes]
     labels: 2D int array of size [batch_size, n_classes]
@@ -37,7 +37,7 @@ def accuracy(predictions, targets):
   Returns:
     accuracy: scalar float, the accuracy of predictions,
               i.e. the average correct predictions over the whole batch
-  
+
   TODO:
   Implement accuracy computation.
   """
@@ -45,7 +45,7 @@ def accuracy(predictions, targets):
   ########################
   # PUT YOUR CODE HERE  #
   #######################
-  raise NotImplementedError
+  accuracy = (predictions.argmax(-1) == targets.argmax(1)).float().mean().item()
   ########################
   # END OF YOUR CODE    #
   #######################
@@ -54,7 +54,7 @@ def accuracy(predictions, targets):
 
 def train():
   """
-  Performs training and evaluation of ConvNet model. 
+  Performs training and evaluation of ConvNet model.
 
   TODO:
   Implement training and evaluation of ConvNet model. Evaluate your model on the whole test set each eval_freq iterations.
@@ -63,11 +63,58 @@ def train():
   ### DO NOT CHANGE SEEDS!
   # Set the random seeds for reproducibility
   np.random.seed(42)
-
+  torch.manual_seed(42)
   ########################
   # PUT YOUR CODE HERE  #
   #######################
-  raise NotImplementedError
+  device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+  cifar10 = cifar10_utils.get_cifar10(data_dir=FLAGS.data_dir)
+  train_data = cifar10['train']
+
+  n_channels = train_data.images.shape[0]
+  n_classes = train_data.labels.shape[1]
+
+  net = ConvNet(n_channels, n_classes)
+  net.to(device)
+
+  params = net.parameters()
+  optimizer = torch.optim.Adam(params, lr=FLAGS.learning_rate)
+  criterion = torch.nn.CrossEntropyLoss()
+  rloss = 0
+
+  print('[DEBUG] start training....')
+
+  for i in range(0, FLAGS.max_steps):
+    x, y = cifar10['train'].next_batch(FLAGS.batch_size)
+    x, y = torch.from_numpy(x).float().to(device) , torch.from_numpy(y).float().to(device)
+    out = net.forward(x)
+    loss = criterion(out, y.argmax(1))
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    rloss += loss.item()
+
+    if i % FLAGS.eval_freq == 0:
+      train_accuracy =  accuracy(out, y)
+      with torch.no_grad():
+        test_accuracys, test_losses = [] ,[]
+        for j in range(0, FLAGS.max_steps):
+          test_x, test_y = cifar10['test'].next_batch(FLAGS.batch_size)
+          test_x, test_y = torch.from_numpy(test_x).float().to(device) , torch.from_numpy(test_y).float().to(device)
+
+          test_out  = net.forward(test_x)
+          test_loss = criterion(test_out, test_y.argmax(1))
+          test_accuracy = accuracy(test_out, test_y)
+          if device == 'cpu':
+            test_losses.append(test_loss)
+          else:
+            test_losses.append(test_loss.cpu().data.numpy())
+
+          test_accuracys.append(test_accuracy)
+        t_acc = np.array(test_accuracys).mean()
+        t_loss = np.array(test_losses).mean()
+        print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
   ########################
   # END OF YOUR CODE    #
   #######################
