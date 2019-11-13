@@ -128,9 +128,11 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
     batch_mean = input.mean(dim=0)
     batch_var = input.var(dim=0, unbiased=False)
     denominator = (batch_var + eps).sqrt()
-    batch_norm = (input - batch_mean) / denominator
+    input_s = input - batch_mean
+    batch_norm = input_s / denominator
     out = gamma * batch_norm + beta
-    ctx.save_for_backward(batch_norm, batch_mean, denominator, gamma )
+    ctx.save_for_backward(batch_norm, batch_mean, denominator, input_s )
+    ctx.gamma = gamma
     ########################
     # END OF YOUR CODE    #
     #######################
@@ -160,7 +162,9 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
     #######################
     grad_input, grad_gamma, grad_beta = None
     # (x, gamma, beta)
-    batch_normalised, batch_mean, denominator, gamma = ctx.saved_tensors()
+    batch_normalised, batch_mean, denominator, input_s = ctx.saved_tensors()
+    gamma = ctx.gamma
+
 
     #Gamma
     if ctx.needs_input_grad[1]:
@@ -171,7 +175,16 @@ class CustomBatchNormManualFunction(torch.autograd.Function):
       grad_beta = torch.sum(grad_output, dim=0)
 
     if ctx.needs_input_grad[0]:
-      normalised_batch_size = grad_output.shape[0]
+      B = grad_output.shape[0]
+      grad_1 =  gamma / denominator
+      grad_2 = B * grad_output
+      grad_3 = (grad_output.sum(dim=0))
+      grad_4 =   ( input_s /(denominator.pow(2))
+
+
+      grad_5 =  (grad_output * input_s).sum(dim=0)
+
+      grad_input  = (grad_1 * (grad_2 - grad_3 - grad_4 * grad_5))/B
 
     ########################
     # END OF YOUR CODE    #
@@ -210,7 +223,10 @@ class CustomBatchNormManualModule(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-
+    self.gamma = torch.nn.Parameter(torch.ones(n_neurons))
+    self.beta = torch.nn.Parameter(torch.zeros(n_neurons))
+    self.n_neurons = n_neurons
+    self.eps = eps
     ########################
     # END OF YOUR CODE    #
     #######################
@@ -233,7 +249,9 @@ class CustomBatchNormManualModule(nn.Module):
     ########################
     # PUT YOUR CODE HERE  #
     #######################
-
+    assert input.shape[1] == self.n_neurons, 'Input size ({}) does not match ({}) neurons shape'.format(input.shape[1], self.n_neurons)
+    custom_batch_norm  = CustomBatchNormManualFunction()
+    out = custom_batch_norm.apply(input, self.gamma, self.beta, self.eps)
     ########################
     # END OF YOUR CODE    #
     #######################
