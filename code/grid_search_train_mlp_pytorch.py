@@ -1,10 +1,10 @@
 import subprocess
 import csv
 
-learning_rate = [2e-2, 2e-3, 2e-4]
-max_steps = [1500, 3000]
-batch_size = [100, 200, 250]
-dnn_hidden_units = ['100, 100', '100,300,100','100,200,400,200,100']
+learning_rate = [2e-3, 2e-4]
+max_steps = [1500]
+batch_size = [100, 150]
+dnn_hidden_units = ['100,500,500,500,100', '300,400,600,600,600,400,300']
 optimizer = ['SGD','Adam','Adamax','Adagrad']
 
 columns = ['Iter','acc', 'dnn_hidden', 'lr','batch_size','optimizer']
@@ -20,6 +20,7 @@ for dnn in dnn_hidden_units:
                     print(f" Accuracy {output} --dnn_hidden_units {dnn} --learning_rate {lr} --max_steps {step} --batch_size {bs} --optimizer {optim}")
                     dict_data = {'Iter':step,'acc':output, 'dnn_hidden':dnn, 'lr':lr,'batch_size':bs,'optimizer':optim}
                     data.append(dict_data)
+                print('------------------------------------------------------------------------------------------------------------------\n')
                     # os.system(f"python train_mlp_pytorch.py --dnn_hidden_units {dnn} --learning_rate {lr} --max_steps {step} --batch_size {bs} --optimizer {optim}")
 print("[DEBUG] Done training")
 with open('.test.csv', 'w') as csvfile:
