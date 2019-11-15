@@ -12,6 +12,7 @@ import os
 from convnet_pytorch import ConvNet
 import cifar10_utils
 import torch
+import matplotlib.pyplot as plt
 # Default constants
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 32
@@ -81,6 +82,10 @@ def train():
   optimizer = torch.optim.Adam(params, lr=FLAGS.learning_rate)
   criterion = torch.nn.CrossEntropyLoss()
   rloss = 0
+  train_acc_plot = []
+  test_acc_plot = []
+  loss_train = []
+  loss_test = []
 
   print(f'[DEBUG] start training.... Max steps {FLAGS.max_steps}')
 
@@ -114,8 +119,27 @@ def train():
           test_accuracys.append(test_accuracy)
         t_acc = np.array(test_accuracys).mean()
         t_loss = np.array(test_losses).mean()
+        train_acc_plot.append(train_accuracy)
+        test_acc_plot.append(t_acc)
+        loss_train.append(rloss/(i + 1))
+        loss_test.append(t_loss)
         print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
-  print('[DEBUG] done training...')
+  print('[DEBUG] Done training')
+  if FLAGS.plot:
+    print('[DEBUG] Start plotting...')
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+    ax1.plot(np.arange(len(train_acc_plot)), train_acc_plot, label='training')
+    ax1.plot(np.arange(len(test_acc_plot)), test_acc_plot, label='testing')
+    ax1.set_title('Training evaluation with batch size '+str(FLAGS.batch_size)+'\n learning rate '+str(FLAGS.learning_rate)+ '\n best accuracy '+str(max(test_acc_plot) )
+    ax1.set_ylabel('Accuracy')
+    ax1.legend()
+    ax2.plot(np.arange(len(loss_train)), loss_train, label='Train Loss')
+    ax2.plot(np.arange(len(loss_test)), loss_test, label='Test Loss')
+    ax2.set_title('Loss evaluation')
+    ax2.set_ylabel('Loss')
+    ax2.legend()
+    plt.xlabel('Iteration')
+    plt.savefig('convnet.png')
   ########################
   # END OF YOUR CODE    #
   #######################
@@ -153,6 +177,8 @@ if __name__ == '__main__':
                         help='Frequency of evaluation on the test set')
   parser.add_argument('--data_dir', type = str, default = DATA_DIR_DEFAULT,
                       help='Directory for storing input data')
+  parser.add_argument('--plot', type=int, default=0,
+                      help='Visualise model with plots, default do not plot')
   FLAGS, unparsed = parser.parse_known_args()
 
   main()

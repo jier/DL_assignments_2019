@@ -3,8 +3,8 @@ import csv
 
 learning_rate = [2e-3, 2e-4, 2e-5]
 max_steps = [1500]
-batch_size = [100, 150]
-dnn_hidden_units = ['250,500,500,250,500,500,250', '300,300,400,700,500,700,400,300,300']
+batch_size = [150, 300]
+dnn_hidden_units = ['300,300,400,700,500,700,400,300,300','500,800,800,500,100' ]
 optimizer = ['Adam','Adamax','Adagrad']
 
 columns = ['Iter','acc', 'dnn_hidden', 'lr','batch_size','optimizer']
@@ -17,7 +17,8 @@ for dnn in dnn_hidden_units:
                 for optim in optimizer:
                     output = subprocess.check_output(['python', 'train_mlp_pytorch.py',f'--dnn_hidden_units={dnn}',f'--learning_rate={lr}',f'--max_steps={step}',f'--batch_size={bs}',f'--optimizer={optim}'])
                     output = output.decode('utf-8').strip()
-                    print(f" Accuracy {output} --dnn_hidden_units {dnn} --learning_rate {lr} --max_steps {step} --batch_size {bs} --optimizer {optim}")
+                    print(output)
+                    # print(f"train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, best_test_accuracy {output} --dnn_hidden_units {dnn} --learning_rate {lr} --max_steps {step} --batch_size {bs} --optimizer {optim}")
                     dict_data = {'Iter':step,'acc':output, 'dnn_hidden':dnn, 'lr':lr,'batch_size':bs,'optimizer':optim}
                     data.append(dict_data)
                 print('------------------------------------------------------------------------------------------------------------------\n')
