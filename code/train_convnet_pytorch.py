@@ -15,7 +15,7 @@ import torch
 # Default constants
 LEARNING_RATE_DEFAULT = 1e-4
 BATCH_SIZE_DEFAULT = 32
-MAX_STEPS_DEFAULT = 5000
+MAX_STEPS_DEFAULT = 5500
 EVAL_FREQ_DEFAULT = 500
 OPTIMIZER_DEFAULT = 'ADAM'
 
@@ -82,7 +82,7 @@ def train():
   criterion = torch.nn.CrossEntropyLoss()
   rloss = 0
 
-  print('[DEBUG] start training....')
+  print(f'[DEBUG] start training.... Max steps {FLAGS.max_steps}')
 
   for i in range(0, FLAGS.max_steps):
     x, y = cifar10['train'].next_batch(FLAGS.batch_size)
@@ -115,6 +115,7 @@ def train():
         t_acc = np.array(test_accuracys).mean()
         t_loss = np.array(test_losses).mean()
         print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
+  print('[DEBUG] done training...')
   ########################
   # END OF YOUR CODE    #
   #######################
