@@ -12,6 +12,7 @@ import os
 from mlp_numpy import MLP
 from modules import CrossEntropyModule
 import cifar10_utils
+import matplotlib.pyplot as plt
 
 # Default constants
 DNN_HIDDEN_UNITS_DEFAULT = '100'
@@ -81,7 +82,7 @@ def train():
   ########################
   # PUT YOUR CODE HERE  #
   #######################
-  cifar10 = cifar10_utils.get_cifar10(data_dir=DATA_DIR_DEFAULT)
+  cifar10 = cifar10_utils.get_cifar10(FLAGS.data_dir)
   train_data = cifar10['train']
 
   # 60000 x 3 x 32 x32 -> 60000 x 3072, input vector 3072
@@ -92,11 +93,14 @@ def train():
   print(f"n_inputs {n_inputs}, n_classes {n_classes}")
   net = MLP(n_inputs, n_hidden, n_classes, neg_slope=neg_slope)
   loss = CrossEntropyModule()
-
+  train_acc_plot = []
+  test_acc_plot = []
+  loss_train = []
+  loss_test = []
   rloss = 0
   print('[DEBUG] start training')
-  for i in range(0, MAX_STEPS_DEFAULT):
-    x, y = cifar10['train'].next_batch(BATCH_SIZE_DEFAULT)
+  for i in range(0, FLAGS.max_steps):
+    x, y = cifar10['train'].next_batch(FLAGS.batch_size)
     x = x.reshape(x.shape[0], -1)
 
     out = net.forward(x)
@@ -108,11 +112,11 @@ def train():
 
     for n in net.net:
       if hasattr(n, 'params'):
-        n.params['weight'] = n.params['weight'] - LEARNING_RATE_DEFAULT * n.grads['weight']
-        n.params['bias'] = n.params['bias'] - LEARNING_RATE_DEFAULT * n.grads['bias']
+        n.params['weight'] = n.params['weight'] - FLAGS.learning_rate* n.grads['weight']
+        n.params['bias'] = n.params['bias'] - FLAGS.learning_rate * n.grads['bias']
 
     rloss += loss_forward
-    if  i % EVAL_FREQ_DEFAULT == 0:
+    if  i % FLAGS.eval_freq == 0:
       train_accuracy = accuracy(out, y)
 
       testX, testY = cifar10['test'].images, cifar10['test'].labels
@@ -122,8 +126,28 @@ def train():
       testLoss = loss.forward(testOut, testY)
 
       test_accuracy = accuracy(testOut, testY)
-
+      train_acc_plot.append(train_accuracy)
+      test_acc_plot.append(test_accuracy)
+      loss_train.append(rloss/(i + 1))
+      loss_test.append(testLoss)
       print(f'iter {i}, avg loss train {rloss/(i + 1)}, test loss {testLoss}, train acc {train_accuracy}, test acc {test_accuracy}')
+  if FLAGS.plot:
+    print('Start plotting...')
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+    ax1.plot(np.arange(len(train_acc_plot)), train_acc_plot, label='training')
+    ax1.plot(np.arange(len(test_acc_plot)), test_acc_plot, label='testing')
+    ax1.set_title('Training evaluation with batch size '+str(FLAGS.batch_size)+'\n learning rate '+str(FLAGS.learning_rate) )
+    ax1.set_ylabel('Accuracy')
+    ax1.legend()
+    ax2.plot(np.arange(len(loss_train)), loss_train, label='Train Loss')
+    ax2.plot(np.arange(len(loss_test)), loss_test, label='Test Loss')
+    ax2.set_title('Loss evaluation')
+    ax2.set_ylabel('Loss')
+    ax2.legend()
+    plt.xlabel('Iteration')
+    plt.savefig('numpy.png')
+    # plt.show()
+
   ########################
   # END OF YOUR CODE    #
   #######################
@@ -165,6 +189,8 @@ if __name__ == '__main__':
                       help='Directory for storing input data')
   parser.add_argument('--neg_slope', type=float, default=NEG_SLOPE_DEFAULT,
                       help='Negative slope parameter for LeakyReLU')
+  parser.add_argument('--plot', type=int, default=0,
+                      help='Visualise model with plots, default do not plot')
   FLAGS, unparsed = parser.parse_known_args()
 
   main()
