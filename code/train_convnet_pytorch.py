@@ -130,7 +130,7 @@ def train():
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
     ax1.plot(np.arange(len(train_acc_plot)), train_acc_plot, label='training')
     ax1.plot(np.arange(len(test_acc_plot)), test_acc_plot, label='testing')
-    ax1.set_title('Training evaluation with batch size '+str(FLAGS.batch_size)+'\n learning rate '+str(FLAGS.learning_rate)+ '\n best accuracy '+str(max(test_acc_plot) )
+    ax1.set_title('Training evaluation with batch size '+str(FLAGS.batch_size)+'\n learning rate '+str(FLAGS.learning_rate)+ '\n best accuracy '+str(max(test_acc_plot) ))
     ax1.set_ylabel('Accuracy')
     ax1.legend()
     ax2.plot(np.arange(len(loss_train)), loss_train, label='Train Loss')

@@ -17,8 +17,7 @@ for dnn in dnn_hidden_units:
                 for optim in optimizer:
                     output = subprocess.check_output(['python', 'train_mlp_pytorch.py',f'--dnn_hidden_units={dnn}',f'--learning_rate={lr}',f'--max_steps={step}',f'--batch_size={bs}',f'--optimizer={optim}'])
                     output = output.decode('utf-8').strip()
-                    print(output)
-                    # print(f"train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, best_test_accuracy {output} --dnn_hidden_units {dnn} --learning_rate {lr} --max_steps {step} --batch_size {bs} --optimizer {optim}")
+                    print(f"Best_test_accuracy {output} --dnn_hidden_units {dnn} --learning_rate {lr} --max_steps {step} --batch_size {bs} --optimizer {optim}")
                     dict_data = {'Iter':step,'acc':output, 'dnn_hidden':dnn, 'lr':lr,'batch_size':bs,'optimizer':optim}
                     data.append(dict_data)
                 print('------------------------------------------------------------------------------------------------------------------\n')

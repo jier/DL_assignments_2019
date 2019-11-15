@@ -1,0 +1,63 @@
+[DEBUG] Training start...
+Best_test_accuracy 0.2641777841746807 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.002 --max_steps 1500 --batch_size 150 --optimizer Adam
+Best_test_accuracy 0.5085600137511889 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.002 --max_steps 1500 --batch_size 150 --optimizer Adamax
+Best_test_accuracy 0.5251555692156156 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.002 --max_steps 1500 --batch_size 150 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.45356223271290463 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.002 --max_steps 1500 --batch_size 300 --optimizer Adam
+Best_test_accuracy 0.5390044580896696 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.002 --max_steps 1500 --batch_size 300 --optimizer Adamax
+Best_test_accuracy 0.5270289016167323 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.002 --max_steps 1500 --batch_size 300 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.5215955697894097 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.0002 --max_steps 1500 --batch_size 150 --optimizer Adam
+Best_test_accuracy 0.5098311234513918 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.0002 --max_steps 1500 --batch_size 150 --optimizer Adamax
+Best_test_accuracy 0.4500222324927648 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.0002 --max_steps 1500 --batch_size 150 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.531493346174558 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.0002 --max_steps 1500 --batch_size 300 --optimizer Adam
+Best_test_accuracy 0.5233600121537845 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.0002 --max_steps 1500 --batch_size 300 --optimizer Adamax
+Best_test_accuracy 0.4677955657641093 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 0.0002 --max_steps 1500 --batch_size 300 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.48439112210273744 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 2e-05 --max_steps 1500 --batch_size 150 --optimizer Adam
+Best_test_accuracy 0.4055111204981804 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 2e-05 --max_steps 1500 --batch_size 150 --optimizer Adamax
+Best_test_accuracy 0.26341333956519764 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 2e-05 --max_steps 1500 --batch_size 150 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.4957466763854027 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 2e-05 --max_steps 1500 --batch_size 300 --optimizer Adam
+Best_test_accuracy 0.43311334383487704 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 2e-05 --max_steps 1500 --batch_size 300 --optimizer Adamax
+Best_test_accuracy 0.2815822295745214 --dnn_hidden_units 300,300,400,700,500,700,400,300,300 --learning_rate 2e-05 --max_steps 1500 --batch_size 300 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.4970089011192322 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.002 --max_steps 1500 --batch_size 150 --optimizer Adam
+Best_test_accuracy 0.511511124253273 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.002 --max_steps 1500 --batch_size 150 --optimizer Adamax
+Best_test_accuracy 0.5355022361874581 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.002 --max_steps 1500 --batch_size 150 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.5257689011096954 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.002 --max_steps 1500 --batch_size 300 --optimizer Adam
+Best_test_accuracy 0.5373355687856675 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.002 --max_steps 1500 --batch_size 300 --optimizer Adamax
+Best_test_accuracy 0.5386533464590708 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.002 --max_steps 1500 --batch_size 300 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.531004458685716 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.0002 --max_steps 1500 --batch_size 150 --optimizer Adam
+Best_test_accuracy 0.531035570482413 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.0002 --max_steps 1500 --batch_size 150 --optimizer Adamax
+Best_test_accuracy 0.4901244561076164 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.0002 --max_steps 1500 --batch_size 150 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.5445111242731412 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.0002 --max_steps 1500 --batch_size 300 --optimizer Adam
+Best_test_accuracy 0.5356044574777286 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.0002 --max_steps 1500 --batch_size 300 --optimizer Adamax
+Best_test_accuracy 0.5042311221957206 --dnn_hidden_units 500,800,800,500,100 --learning_rate 0.0002 --max_steps 1500 --batch_size 300 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.5135333470106125 --dnn_hidden_units 500,800,800,500,100 --learning_rate 2e-05 --max_steps 1500 --batch_size 150 --optimizer Adam
+Best_test_accuracy 0.4650222330292066 --dnn_hidden_units 500,800,800,500,100 --learning_rate 2e-05 --max_steps 1500 --batch_size 150 --optimizer Adamax
+Best_test_accuracy 0.36758223034938176 --dnn_hidden_units 500,800,800,500,100 --learning_rate 2e-05 --max_steps 1500 --batch_size 150 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+Best_test_accuracy 0.5195022340416908 --dnn_hidden_units 500,800,800,500,100 --learning_rate 2e-05 --max_steps 1500 --batch_size 300 --optimizer Adam
+Best_test_accuracy 0.4826288987199465 --dnn_hidden_units 500,800,800,500,100 --learning_rate 2e-05 --max_steps 1500 --batch_size 300 --optimizer Adamax
+Best_test_accuracy 0.3783444527784983 --dnn_hidden_units 500,800,800,500,100 --learning_rate 2e-05 --max_steps 1500 --batch_size 300 --optimizer Adagrad
+------------------------------------------------------------------------------------------------------------------
+
+[DEBUG] Done training
+[DEBUG] Wrote to test.csv done.

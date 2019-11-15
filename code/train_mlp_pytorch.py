@@ -163,19 +163,17 @@ def train():
         test_acc_plot.append(t_acc)
         loss_train.append(rloss/(i + 1))
         loss_test.append(t_loss)
-        # print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
-        print(f"train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}")
+        print(f"iter {i}, train_loss_avg {rloss/(i + 1)}, test_loss_avg {t_loss}, train_acc {train_accuracy}, test_acc_avg {t_acc}")
         if t_acc > best_accuracy:
           best_accuracy = t_acc
 
-  # print(f"Best Accuracy {best_accuracy}",flush=True)
-  print(best_accuracy)
+  print(f"Best Accuracy {best_accuracy}",flush=True)
   if FLAGS.plot:
     print('Start plotting...')
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
     ax1.plot(np.arange(len(train_acc_plot)), train_acc_plot, label='training')
     ax1.plot(np.arange(len(test_acc_plot)), test_acc_plot, label='testing')
-    ax1.set_title('Training evaluation with batch size '+str(FLAGS.batch_size)+'\n learning rate '+str(FLAGS.learning_rate)+ '\n best accuracy '+str(best_accuracy) )
+    ax1.set_title('Training evaluation batch size '+str(FLAGS.batch_size)+' learning rate '+str(FLAGS.learning_rate)+ '\n best accuracy '+str(best_accuracy) )
     ax1.set_ylabel('Accuracy')
     ax1.legend()
     ax2.plot(np.arange(len(loss_train)), loss_train, label='Train Loss')
