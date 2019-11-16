@@ -1,0 +1,20 @@
+learning_rate : 0.0001
+max_steps : 5500
+batch_size : 32
+eval_freq : 500
+data_dir : ./cifar10/cifar-10-batches-py
+plot : 1
+[DEBUG] start training.... Max steps 5500
+iter 0, train_loss_avg 2.340364456176758, test_loss_avg 2.2891135215759277, train_acc 0.0625, test_acc_avg 0.17092613636363638
+iter 500, train_loss_avg 1.393168938374091, test_loss_avg 1.1299171447753906, train_acc 0.625, test_acc_avg 0.5985625
+iter 1000, train_loss_avg 1.223327941291935, test_loss_avg 1.006166696548462, train_acc 0.625, test_acc_avg 0.6449147727272727
+iter 1500, train_loss_avg 1.1304164804830938, test_loss_avg 0.9186977744102478, train_acc 0.5625, test_acc_avg 0.6768693181818182
+iter 2000, train_loss_avg 1.045665437522261, test_loss_avg 0.8311994671821594, train_acc 0.6875, test_acc_avg 0.7109318181818182
+iter 2500, train_loss_avg 0.9844341865900468, test_loss_avg 0.7523736953735352, train_acc 0.78125, test_acc_avg 0.7352215909090909
+iter 3000, train_loss_avg 0.9402534890347661, test_loss_avg 0.7544564008712769, train_acc 0.78125, test_acc_avg 0.7406136363636364
+iter 3500, train_loss_avg 0.8915407890227821, test_loss_avg 0.7215796113014221, train_acc 0.71875, test_acc_avg 0.7542556818181818
+iter 4000, train_loss_avg 0.8531113616252536, test_loss_avg 0.7123132348060608, train_acc 0.84375, test_acc_avg 0.7567670454545454
+iter 4500, train_loss_avg 0.822120117935253, test_loss_avg 0.699504017829895, train_acc 0.78125, test_acc_avg 0.764375
+iter 5000, train_loss_avg 0.7881860455300326, test_loss_avg 0.6830660104751587, train_acc 0.8125, test_acc_avg 0.7718863636363636
+[DEBUG] Done training
+[DEBUG] Start plotting...

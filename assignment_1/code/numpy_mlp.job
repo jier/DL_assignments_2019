@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#SBATCH --job-name=numpy_mlp
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=9:00:00
+#SBATCH --mem=60000M
+#SBATCH --partition=gpu_shared_course
+#SBATCH --gres=gpu:1
+
+
+srun python3 -u train_mlp_numpy.py --dataset=cifar10 --dataroot=. --eval_freq=1 --plot=1 --cuda

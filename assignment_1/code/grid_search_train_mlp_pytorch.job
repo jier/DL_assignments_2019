@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#SBATCH --job-name=grid_search
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=9:00:00
+#SBATCH --mem=60000M
+#SBATCH --partition=gpu_shared_course
+#SBATCH --gres=gpu:1
+
+
+srun python3 -u grid_search_train_mlp_pytorch.py --dataset=cifar10 --dataroot=. --cuda

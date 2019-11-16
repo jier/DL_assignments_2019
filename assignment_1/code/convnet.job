@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#SBATCH --job-name=convnet_train
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=9:00:00
+#SBATCH --mem=60000M
+#SBATCH --partition=gpu_shared_course
+#SBATCH --gres=gpu:1
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --mail-user=jier.nzuanzu@student.uva.nl
+
+
+srun python3 -u train_convnet_pytorch.py --max_steps=7500 --dataset=cifar10 --dataroot=. --plot=1 --cuda
+

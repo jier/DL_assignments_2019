@@ -1,0 +1,24 @@
+learning_rate : 0.0001
+max_steps : 7500
+batch_size : 32
+eval_freq : 500
+data_dir : ./cifar10/cifar-10-batches-py
+plot : 1
+[DEBUG] start training.... Max steps 7500
+iter 0, train_loss_avg 2.340364456176758, test_loss_avg 2.2891151905059814, train_acc 0.0625, test_acc_avg 0.17076666666666668
+iter 500, train_loss_avg 1.3891272048750323, test_loss_avg 1.128184199333191, train_acc 0.65625, test_acc_avg 0.5991
+iter 1000, train_loss_avg 1.2203538377920946, test_loss_avg 0.9787062406539917, train_acc 0.625, test_acc_avg 0.6561958333333333
+iter 1500, train_loss_avg 1.127949898716293, test_loss_avg 0.9213895201683044, train_acc 0.65625, test_acc_avg 0.6762541666666667
+iter 2000, train_loss_avg 1.041218092803774, test_loss_avg 0.8128768801689148, train_acc 0.78125, test_acc_avg 0.713125
+iter 2500, train_loss_avg 0.9824883204157568, test_loss_avg 0.7635553479194641, train_acc 0.625, test_acc_avg 0.739725
+iter 3000, train_loss_avg 0.9378576283056074, test_loss_avg 0.7402418851852417, train_acc 0.875, test_acc_avg 0.743775
+iter 3500, train_loss_avg 0.8895365162360195, test_loss_avg 0.726265549659729, train_acc 0.8125, test_acc_avg 0.7517875
+iter 4000, train_loss_avg 0.8514991069221401, test_loss_avg 0.6908094882965088, train_acc 0.875, test_acc_avg 0.7662375
+iter 4500, train_loss_avg 0.8212099412637826, test_loss_avg 0.6712619662284851, train_acc 0.78125, test_acc_avg 0.769725
+iter 5000, train_loss_avg 0.7871500664301049, test_loss_avg 0.6749603152275085, train_acc 0.75, test_acc_avg 0.775025
+iter 5500, train_loss_avg 0.757288355428378, test_loss_avg 0.6592669486999512, train_acc 0.875, test_acc_avg 0.7793458333333333
+iter 6000, train_loss_avg 0.7328060744598773, test_loss_avg 0.6219437718391418, train_acc 0.875, test_acc_avg 0.7900875
+iter 6500, train_loss_avg 0.7061281153647703, test_loss_avg 0.6399763226509094, train_acc 0.875, test_acc_avg 0.79385
+iter 7000, train_loss_avg 0.6800125010514869, test_loss_avg 0.6611143350601196, train_acc 0.8125, test_acc_avg 0.7854708333333333
+[DEBUG] Done training
+[DEBUG] Start plotting...
