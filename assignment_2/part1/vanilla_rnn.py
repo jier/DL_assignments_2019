@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import torch
 import torch.nn as nn
+import numpy as np
 
 ################################################################################
 
@@ -29,6 +30,32 @@ class VanillaRNN(nn.Module):
         super(VanillaRNN, self).__init__()
         # Initialization here ...
 
+        self.seq_length = seq_length
+        self.device = device
+        
+        mean = 0.0
+        std = 1e-4
+        
+        self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim).normal_(mean=mean, std=std))
+        self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden).normal_(mean=mean, std=std))
+        self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes).normal_(mean=mean, std=std))
+
+        self.hidden = torch.zeros((num_hidden, 1), requires_grad=False).to(self.device)
+
+        self.b_h = nn.Parameter(torch.zeros((num_hidden, 1)))
+        self.b_p = nn.Parameter(torch.zeros((num_classes, 1)))
+
+        self.tanh = nn.Tanh()
+        # print(f"self.hidden {self.hidden.shape}, input_x_weight {self.W_hx.shape}, hidden_layer {self.W_hh.shape} ,Output {self.W_hy.shape}")
+
+
+
     def forward(self, x):
         # Implementation here ...
-        pass
+        
+        hidden = self.hidden.to(self.device)
+        for step in range(self.seq_length):
+            hidden = self.tanh(self.W_hx @ x[:, step].reshape(1, -1) + self.W_hh @ hidden + self.b_h)
+        out = self.W_hy.t() @ hidden + self.b_p
+
+        return out.t()

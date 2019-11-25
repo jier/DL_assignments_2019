@@ -385,3 +385,12 @@ MigrationBackup/
 
 .DS_Store
 */.DS_Store
+
+# Ignore tensorboard outputs
+runs/
+
+#Ignore vscode
+.vscode
+
+#Ignore LISA output
+*.out
