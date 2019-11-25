@@ -40,7 +40,15 @@ from torch.utils.tensorboard import SummaryWriter
 def train(config):
 
     assert config.model_type in ('RNN', 'LSTM')
-    writer = SummaryWriter('runs/RNN')
+    if config.tensorboard:
+        writer = SummaryWriter(config.summary + datetime.now().strftime("%Y%m%d-%H%M%S"))
+    elif config.record_plot:
+        CSV_DIR = config.csv
+        if not os.path.isfile(CSV_DIR):
+            f = open(CSV_DIR, 'w')
+            writer = csv.writer(f)
+            writer.writerow(['model_type', 'step', 'input_length', 'accuracy', 'loss'])
+            f.close()
     # Initialize the device which to run the model on
     device = torch.device(config.device)
 
@@ -61,20 +69,19 @@ def train(config):
                 config.num_hidden,
                 config.num_classes,
                 device=device)
-        # optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
+        optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+    
     model.to(device)
     # Initialize the dataset and data loader (note the +1)
+    torch.manual_seed(42)
+    np.random.seed(42)
     dataset = PalindromeDataset(config.input_length+1)
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
 
     # Setup the loss 
     criterion = torch.nn.CrossEntropyLoss()
-    # CSV_DIR = config.csv
-    # if not os.path.isfile(CSV_DIR):
-    #     f = open(CSV_DIR, 'w')
-    #     writer = csv.writer(f)
-    #     writer.writerow(['model_type', 'step', 'input_length', 'accuracy', 'loss'])
-    #     f.close()
+    acc_check = []
+    loss_check = []
 
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
 
@@ -89,7 +96,7 @@ def train(config):
         torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=config.max_norm)
         ############################################################################
 
-        # Add more code here ...
+        # Add more code here ...0
         batch_inputs = batch_inputs.to(device)
         batch_targets = batch_targets.to(device)
         out = model.forward(batch_inputs)
@@ -101,6 +108,8 @@ def train(config):
 
         predictions = out.argmax(dim=-1)
         accuracy = (predictions == batch_targets).float().mean()
+        acc_check.append(accuracy)
+        loss_check.append(loss)
 
         # Just for time measurement
         t2 = time.time()
@@ -114,17 +123,26 @@ def train(config):
                     config.train_steps, config.batch_size, examples_per_second,
                     accuracy, loss
             ))
-            writer.add_scalar('training_loss', loss, step)
-            writer.add_scalar('accuracy', accuracy, step)
-            # with open(CSV_DIR, 'a') as f:
-            #     writer = csv.writer(f)
-            #     writer.writerow([config.model_type, step, config.input_length, accuracy.item(), loss.item()])
+            if config.tensorboard:
+                writer.add_scalar('training_loss', loss, step)
+                writer.add_scalar('accuracy', accuracy, step)
+            elif config.record_plot:
+                with open(CSV_DIR, 'a') as f:
+                    writer = csv.writer(f)
+                    writer.writerow([config.model_type, step, config.input_length, accuracy.item(), loss.item()])
+
+        if acc_check[step -1 ] :
+            if acc_check[step] > acc_check[step -1] and loss_check[step] - loss_check[step -1] < 1e-3:
+                print('Yesss')
+                continue
         if step == config.train_steps:
             # If you receive a PyTorch data-loader error, check this bug report:
             # https://github.com/pytorch/pytorch/pull/96553
+            
             break
 
     print('Done training.')
+    
 
 
  ################################################################################
@@ -138,16 +156,19 @@ if __name__ == "__main__":
     # Model params
     parser.add_argument('--model_type', type=str, default="RNN", help="Model type, should be 'RNN' or 'LSTM'")
     parser.add_argument('--input_length', type=int, default=10, help='Length of an input sequence')
-    parser.add_argument('--input_dim', type=int, default=1, help='Dimensionality of input sequence')
+    parser.add_argument('--input_dim', type=int, default=1, help='Dimensionality of input sequence') # 1
     parser.add_argument('--num_classes', type=int, default=10, help='Dimensionality of output sequence')
     parser.add_argument('--num_hidden', type=int, default=128, help='Number of hidden units in the model')
     parser.add_argument('--batch_size', type=int, default=128, help='Number of examples to process in a batch')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
-    parser.add_argument('--train_steps', type=int, default=10000, help='Number of training steps')
+    parser.add_argument('--train_steps', type=int, default=100, help='Number of training steps') #10000
     parser.add_argument('--max_norm', type=float, default=10.0)
     parser.add_argument('--device', type=str, default="cpu", help="Training device 'cpu' or 'cuda:0'")
+    # Debug material
     parser.add_argument('--csv', type=str, default='loss_accuracy.csv')
-
+    parser.add_argument('--summary', type=str, default='runs/RNN', help='Specify where to write out tensorboard summaries')
+    parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
+    parser.add_argument('--record_plot', type=int, default=0, help='Useful when training to save csv data to plot')
     config = parser.parse_args()
 
     # Train the model
