@@ -59,6 +59,7 @@ def train(config):
                 config.input_dim,
                 config.num_hidden,
                 config.num_classes,
+                # config.batch_size,
                 device=device)
         optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
 
@@ -68,8 +69,9 @@ def train(config):
                 config.input_dim,
                 config.num_hidden,
                 config.num_classes,
+                config.batch_size,
                 device=device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+        optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
     
     model.to(device)
     # Initialize the dataset and data loader (note the +1)
@@ -77,7 +79,7 @@ def train(config):
     np.random.seed(42)
     dataset = PalindromeDataset(config.input_length+1)
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
-
+    acc_check = []
     # Setup the loss 
     criterion = torch.nn.CrossEntropyLoss()
 
@@ -106,7 +108,7 @@ def train(config):
 
         predictions = out.argmax(dim=-1)
         accuracy = (predictions == batch_targets).float().mean()
-
+        acc_check.append(accuracy.detach().cpu().float())
         # Just for time measurement
         t2 = time.time()
         examples_per_second = config.batch_size/float(t2-t1)
@@ -128,7 +130,7 @@ def train(config):
                     writer.writerow([config.model_type, step, config.input_length, accuracy.item(), loss.item()])
 
         
-        if  loss <= 1e-3:
+        if  loss <= 5e-3 and not all([ i is 1.0 for i in acc_check[5:] if len(acc_check) >=5]) :
             break
         if step == config.train_steps:
             # If you receive a PyTorch data-loader error, check this bug report:
@@ -149,7 +151,7 @@ if __name__ == "__main__":
 
     # Model params
     parser.add_argument('--model_type', type=str, default="RNN", help="Model type, should be 'RNN' or 'LSTM'")
-    parser.add_argument('--input_length', type=int, default=10, help='Length of an input sequence')
+    parser.add_argument('--input_length', type=int, default=5, help='Length of an input sequence')
     parser.add_argument('--input_dim', type=int, default=1, help='Dimensionality of input sequence') # 1
     parser.add_argument('--num_classes', type=int, default=10, help='Dimensionality of output sequence')
     parser.add_argument('--num_hidden', type=int, default=128, help='Number of hidden units in the model')

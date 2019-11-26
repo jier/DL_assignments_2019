@@ -35,15 +35,19 @@ class VanillaRNN(nn.Module):
         self.num_classes = num_classes
         self.input_dim = input_dim
         
-        mean = 0.0
-        std = 1e-4
+        self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim), requires_grad=True).to(self.device)
+        self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden), requires_grad=True).to(self.device)
+        self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes), requires_grad=True).to(self.device)
+
+        self.hidden = torch.zeros((num_hidden, 1), requires_grad=True).to(self.device)
         
-        self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim).normal_(mean=mean, std=std)).to(self.device)
-        self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden).normal_(mean=mean, std=std)).to(self.device)
-        self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes).normal_(mean=mean, std=std)).to(self.device)
-
-        self.hidden = torch.zeros((num_hidden, 1), requires_grad=False).to(self.device)
-
+         # Xavier bound 
+        bound = np.sqrt(1 / num_hidden)
+        # print('bound for xavier: ', bound)
+        for param in self.parameters():
+			# nn.init.orthogonal_(param)
+            nn.init.uniform_(param, -bound, bound)
+        
         self.b_h = nn.Parameter(torch.zeros((num_hidden, 1)))
         self.b_p = nn.Parameter(torch.zeros((num_classes, 1)))
 
@@ -61,9 +65,10 @@ class VanillaRNN(nn.Module):
         # sys.exit(0)
         # x = x[..., None]
         for step in range(self.seq_length):
-            # print(f'x shape {x.shape} step shape {x[:,step].shape} wrong? {x[step,:].shape}')
+            # print(f'x shape {x.shape} step shape {x[:,step].shape} wrong? {x[:,step:].shape}')
+           
+            hidden = self.tanh(self.W_hx @ x[:,step].reshape(1, -1)  + self.W_hh @ hidden + self.b_h)
             # sys.exit(0)
-            hidden = self.tanh(self.W_hx @ x[:,step].reshape(1, -1) + self.W_hh @ hidden + self.b_h)
         out = self.W_hy.t() @ hidden + self.b_p
 
         return out.t()
