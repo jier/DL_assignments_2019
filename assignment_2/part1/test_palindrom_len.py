@@ -2,6 +2,7 @@ from train import train
 import argparse
 import numpy as np
 import csv
+import os
 
 def gen_data(config):
 
