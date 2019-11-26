@@ -4,7 +4,7 @@ import numpy as np
 
 def gen_data(config):
 
-    LENGTHS = range(5, 10, 5)
+    LENGTHS = range(5, 45)
     MODEL_TYPES = ['RNN', 'LSTM']
     accuracies = []
 
