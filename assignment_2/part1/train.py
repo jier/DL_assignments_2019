@@ -80,8 +80,7 @@ def train(config):
 
     # Setup the loss 
     criterion = torch.nn.CrossEntropyLoss()
-    acc_check = []
-    loss_check = []
+
 
     for step, (batch_inputs, batch_targets) in enumerate(data_loader):
 
@@ -90,12 +89,6 @@ def train(config):
 
         # Add more code here ...
         optimizer.zero_grad()
-        ############################################################################
-        # QUESTION: what happens here and why?
-        ############################################################################
-        torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=config.max_norm)
-        ############################################################################
-
         # Add more code here ...0
         batch_inputs = batch_inputs.to(device)
         batch_targets = batch_targets.to(device)
@@ -103,13 +96,16 @@ def train(config):
         # print(f'forward output {out.shape}, batch input shape {batch_inputs.shape}, batch_targets.shape {batch_targets.shape}')
         loss = criterion(out, batch_targets)
         loss.backward()
+        ############################################################################
+        # QUESTION: what happens here and why?
+        ############################################################################
+        torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=config.max_norm)
+        ############################################################################
 
         optimizer.step()
 
         predictions = out.argmax(dim=-1)
         accuracy = (predictions == batch_targets).float().mean()
-        acc_check.append(accuracy)
-        loss_check.append(loss)
 
         # Just for time measurement
         t2 = time.time()
@@ -131,17 +127,15 @@ def train(config):
                     writer = csv.writer(f)
                     writer.writerow([config.model_type, step, config.input_length, accuracy.item(), loss.item()])
 
-        if acc_check[step -1 ] :
-            if acc_check[step] > acc_check[step -1] and loss_check[step] - loss_check[step -1] < 1e-3:
-                print('Yesss')
-                continue
+        
+        if  loss <= 1e-3:
+            break
         if step == config.train_steps:
             # If you receive a PyTorch data-loader error, check this bug report:
             # https://github.com/pytorch/pytorch/pull/96553
-            
             break
 
-    print('Done training.')
+    return accuracy
     
 
 
@@ -161,7 +155,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_hidden', type=int, default=128, help='Number of hidden units in the model')
     parser.add_argument('--batch_size', type=int, default=128, help='Number of examples to process in a batch')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
-    parser.add_argument('--train_steps', type=int, default=100, help='Number of training steps') #10000
+    parser.add_argument('--train_steps', type=int, default=10000, help='Number of training steps') #10000
     parser.add_argument('--max_norm', type=float, default=10.0)
     parser.add_argument('--device', type=str, default="cpu", help="Training device 'cpu' or 'cuda:0'")
     # Debug material
