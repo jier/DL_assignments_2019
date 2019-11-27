@@ -59,7 +59,7 @@ def train(config):
                 config.input_dim,
                 config.num_hidden,
                 config.num_classes,
-                # config.batch_size,
+                config.batch_size,
                 device=device)
         optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
 
@@ -75,8 +75,8 @@ def train(config):
     
     model.to(device)
     # Initialize the dataset and data loader (note the +1)
-    torch.manual_seed(42)
-    np.random.seed(42)
+    # torch.manual_seed(42)
+    # np.random.seed(42)
     dataset = PalindromeDataset(config.input_length+1)
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
     acc_check = []
@@ -115,10 +115,10 @@ def train(config):
 
         if step % 10 == 0:
 
-            print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
+            print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Model type {}, Examples/Sec = {:.2f}, "
                   "Accuracy = {:.2f}, Loss = {:.3f}".format(
                     datetime.now().strftime("%Y-%m-%d %H:%M"), step,
-                    config.train_steps, config.batch_size, examples_per_second,
+                    config.train_steps, config.batch_size, config.model_type, examples_per_second,
                     accuracy, loss
             ))
             if config.tensorboard:
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
     parser.add_argument('--train_steps', type=int, default=10000, help='Number of training steps') #10000
     parser.add_argument('--max_norm', type=float, default=10.0)
-    parser.add_argument('--device', type=str, default="cpu", help="Training device 'cpu' or 'cuda:0'")
+    parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
     # Debug material
     parser.add_argument('--csv', type=str, default='loss_accuracy.csv')
     parser.add_argument('--summary', type=str, default='runs/RNN', help='Specify where to write out tensorboard summaries')

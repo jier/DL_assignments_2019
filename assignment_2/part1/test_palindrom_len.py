@@ -23,12 +23,15 @@ def gen_data(config):
             config.input_length = l
             for iter in range(l):
                 np.random.seed(iter *l)
+                print("----------------------------------------------INPUT LENGTH ", l, "------------------------\n")
                 accuracy = train(config)
-                accuracy_temp.append(accuracy)
+                accuracy_temp.append(accuracy.detach().cpu())
+            print("-------------------- DONE iterating for length ", l, "-----------------------------------------\n")
             accuracies.append((np.array(accuracy_temp).mean(),np.array(accuracy_temp).std()))
             with open(CSV_DIR, 'a') as f:
                 writer = csv.writer(f)
                 writer.writerow([config.model_type, np.array(accuracies)[:,0], np.array(accuracies)[:,1], config.input_length])
+            print("-------------------- DONE WRITING TO CSV -------------------------------------------------------\n")
 
 
 
@@ -47,11 +50,11 @@ if __name__ == "__main__":
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
     parser.add_argument('--train_steps', type=int, default=10000, help='Number of training steps') #10000
     parser.add_argument('--max_norm', type=float, default=10.0)
-    parser.add_argument('--device', type=str, default="cpu", help="Training device 'cpu' or 'cuda:0'")
+    parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
     # Debug material
     parser.add_argument('--csv', type=str, default='test_palindrome.csv')
     parser.add_argument('--summary', type=str, default='runs/RNN', help='Specify where to write out tensorboard summaries')
-    parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
+    parser.add_argument('--tensorboard', type=int, default=1, help='Use tensorboard for one run, default do not show')
     parser.add_argument('--record_plot', type=int, default=0, help='Useful when training to save csv data to plot')
     config = parser.parse_args()
 

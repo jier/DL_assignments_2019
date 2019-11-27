@@ -1,6 +1,7 @@
 #cudatoolkit==9.0
 torch==1.2 
 torchvision==0.2.2
+tensorboard
 pandas==0.24.2
 matplotlib==3.0.3
 numpy==1.16.2

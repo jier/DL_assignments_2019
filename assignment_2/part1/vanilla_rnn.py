@@ -26,7 +26,7 @@ import sys
 
 class VanillaRNN(nn.Module):
 
-    def __init__(self, seq_length, input_dim, num_hidden, num_classes, device='cpu'):
+    def __init__(self, seq_length, input_dim, num_hidden, num_classes, batch_size, device):
         super(VanillaRNN, self).__init__()
         # Initialization here ...
 
@@ -34,12 +34,13 @@ class VanillaRNN(nn.Module):
         self.device = device
         self.num_classes = num_classes
         self.input_dim = input_dim
+        self.batch_size = batch_size
         
         self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim), requires_grad=True).to(self.device)
         self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden), requires_grad=True).to(self.device)
         self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes), requires_grad=True).to(self.device)
 
-        self.hidden = torch.zeros((num_hidden, 1), requires_grad=True).to(self.device)
+        self.hidden = torch.zeros((num_hidden, batch_size), requires_grad=True).to(self.device)
         
          # Xavier bound 
         bound = np.sqrt(1 / num_hidden)
@@ -48,8 +49,8 @@ class VanillaRNN(nn.Module):
 			# nn.init.orthogonal_(param)
             nn.init.uniform_(param, -bound, bound)
         
-        self.b_h = nn.Parameter(torch.zeros((num_hidden, 1)))
-        self.b_p = nn.Parameter(torch.zeros((num_classes, 1)))
+        self.b_h = nn.Parameter(torch.zeros(num_hidden, 1), requires_grad=True)
+        self.b_p = nn.Parameter(torch.zeros(num_classes, 1), requires_grad=True)
 
         self.tanh = nn.Tanh()
         # print(f"self.hidden {self.hidden.shape}, input_x_weight {self.W_hx.shape}, hidden_layer {self.W_hh.shape} ,Output {self.W_hy.shape}")
