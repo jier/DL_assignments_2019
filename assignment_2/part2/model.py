@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import torch
 import torch.nn as nn
 
 
@@ -38,7 +39,7 @@ class TextGenerationModel(nn.Module):
             input_size =self.vocabulary_size,
             hidden_size=self.lstm_num_hidden,
             num_layers=self.lstm_num_layers, 
-            batch_first = False # (seq, batch, input) if true (batch, seq, input)
+            batch_first = True # (seq, batch, input) if true (batch, seq, input)
         ).to(self.device)
 
         self.linear = nn.Linear(lstm_num_hidden, vocabulary_size).to(self.device)

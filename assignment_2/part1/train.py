@@ -61,7 +61,6 @@ def train(config):
                 config.num_classes,
                 config.batch_size,
                 device=device)
-        optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
 
     elif config.model_type=='LSTM':
 
@@ -71,7 +70,8 @@ def train(config):
                 config.num_classes,
                 config.batch_size,
                 device=device)
-        optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
+    
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
     
     model.to(device)
     # Initialize the dataset and data loader (note the +1)

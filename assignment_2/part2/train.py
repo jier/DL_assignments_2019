@@ -18,6 +18,8 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import sys
+sys.path.append("..") 
 import time
 from datetime import datetime
 import argparse
@@ -28,8 +30,8 @@ import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from part2.dataset import TextDataset
-from part2.model import TextGenerationModel
+from dataset import TextDataset
+from model import TextGenerationModel
 
 ################################################################################
 
@@ -61,10 +63,21 @@ def train(config):
             # Add more code here ...
             #######################################################
             optimizer.zero_grad()
-            batch_inputs = torch.nn.functional.one_hot(batch_inputs, num_classes=dataset.vocab_size)
-            print(f'batch shape {batch_inputs.shape}')
-            loss = np.inf   # fixme
-            accuracy = 0.0  # fixme
+            # Set to float LongTensor output dtype of one_hot produces internal error for forward
+            batch_inputs = torch.nn.functional.one_hot(batch_inputs, num_classes=dataset.vocab_size).float().to(device)
+            
+            batch_targets = batch_targets.to(device)
+            out, _ = model.forward(batch_inputs)
+
+            #Expected size 64 x 87 x 30 got 64 x 30 x 87 to compute with 64 x 30
+            loss = criterion(out.permute(0,2,1), batch_targets)
+            loss.backward()
+
+            torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=config.max_norm)
+            optimizer.step()
+
+            predictions = out.argmax(dim=-1)
+            accuracy = (predictions == batch_targets).float().mean()
 
             # Just for time measurement
             t2 = time.time()
@@ -72,10 +85,10 @@ def train(config):
 
             if step % config.print_every == 0:
 
-                print("[{}] Train Step {:04d}/{:04d}, Batch Size = {}, Examples/Sec = {:.2f}, "
+                print("[{}] Train Step {:04d}/{:04d}, Epoch {:d} Batch Size = {}, Examples/Sec = {:.2f}, "
                     "Accuracy = {:.2f}, Loss = {:.3f}".format(
                         datetime.now().strftime("%Y-%m-%d %H:%M"), step,
-                        config.train_steps, config.batch_size, examples_per_second,
+                        int(config.train_steps), epoch, config.batch_size, examples_per_second,
                         accuracy, loss
                 ))
 
