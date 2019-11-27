@@ -42,22 +42,22 @@ class LSTM(nn.Module):
         # weights
         # W_f, W_i, W_o same dim as C_t (hidden) x (x)
         # input modulation gate
-        self.W_gx = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True).to(device)
-        self.W_gh = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True).to(device)
+        self.W_gx = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True)
+        self.W_gh = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True)
 
         # input gate
-        self.W_ix = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True).to(device)
-        self.W_ih = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True).to(device)
+        self.W_ix = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True)
+        self.W_ih = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True)
 
         # forget gate
-        self.W_fx = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True).to(device)
-        self.W_fh = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True).to(device)
+        self.W_fx = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True)
+        self.W_fh = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True)
 
         # output gate
-        self.W_ox = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True).to(device)
-        self.W_oh = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True).to(device)
+        self.W_ox = nn.Parameter(torch.Tensor(input_dim, num_hidden),requires_grad=True)
+        self.W_oh = nn.Parameter(torch.Tensor(num_hidden, num_hidden),requires_grad=True)
 
-        self.W_ph = nn.Parameter(torch.Tensor(num_hidden, num_classes),requires_grad=True).to(device)
+        self.W_ph = nn.Parameter(torch.Tensor(num_hidden, num_classes),requires_grad=True)
 
         # Xavier bound 
         bound = np.sqrt(1 / num_hidden)
@@ -67,12 +67,12 @@ class LSTM(nn.Module):
             nn.init.uniform_(param, -bound, bound)
 
         # biases
-        self.b_g = nn.Parameter(torch.zeros(num_hidden), requires_grad=True).to(device) # input modulation gate
-        self.b_i = nn.Parameter(torch.zeros(num_hidden),requires_grad=True).to(device) # input gate
+        self.b_g = nn.Parameter(torch.zeros(num_hidden), requires_grad=True) # input modulation gate
+        self.b_i = nn.Parameter(torch.zeros(num_hidden),requires_grad=True) # input gate
         # http://proceedings.mlr.press/v37/jozefowicz15.pdf to set forget gates to ones
-        self.b_f = nn.Parameter(torch.ones(num_hidden),requires_grad=True).to(device) # forget gate
-        self.b_o = nn.Parameter(torch.zeros(num_hidden),requires_grad=True).to(device) # output gate
-        self.b_p = nn.Parameter(torch.zeros(num_classes),requires_grad=True).to(device)#output
+        self.b_f = nn.Parameter(torch.ones(num_hidden),requires_grad=True) # forget gate
+        self.b_o = nn.Parameter(torch.zeros(num_hidden),requires_grad=True) # output gate
+        self.b_p = nn.Parameter(torch.zeros(num_classes),requires_grad=True)#output
 
         self.tanh = nn.Tanh()
         self.sigmoid = nn.Sigmoid()
