@@ -3,6 +3,7 @@ import argparse
 import numpy as np
 import csv
 import os
+import torch
 
 def gen_data(config):
 
@@ -23,11 +24,12 @@ def gen_data(config):
             config.input_length = l
             for iter in range(l):
                 np.random.seed(iter *l)
+                torch.manual_seed(iter * l)
                 print("----------------------------------------------INPUT LENGTH ", l, "------------------------\n")
                 accuracy = train(config)
                 accuracy_temp.append(accuracy.detach().cpu())
             print("-------------------- DONE iterating for length ", l, "-----------------------------------------\n")
-            accuracies.append((np.array(accuracy_temp).mean(),np.array(accuracy_temp).std()))
+            accuracies.append((np.mean(np.array(accuracy_temp)),np.std(np.array(accuracy_temp)) ))
             with open(CSV_DIR, 'a') as f:
                 writer = csv.writer(f)
                 writer.writerow([config.model_type, np.array(accuracies)[:,0], np.array(accuracies)[:,1], config.input_length])
@@ -52,8 +54,8 @@ if __name__ == "__main__":
     parser.add_argument('--max_norm', type=float, default=10.0)
     parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
     # Debug material
-    parser.add_argument('--csv', type=str, default='test_palindrome.csv')
-    parser.add_argument('--summary', type=str, default='runs/RNN', help='Specify where to write out tensorboard summaries')
+    parser.add_argument('--csv', type=str, default='test_palindrome_lstm.csv')
+    parser.add_argument('--summary', type=str, default='runs/LSTM', help='Specify where to write out tensorboard summaries')
     parser.add_argument('--tensorboard', type=int, default=1, help='Use tensorboard for one run, default do not show')
     parser.add_argument('--record_plot', type=int, default=0, help='Useful when training to save csv data to plot')
     config = parser.parse_args()

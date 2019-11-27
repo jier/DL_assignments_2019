@@ -35,6 +35,7 @@ class VanillaRNN(nn.Module):
         self.num_classes = num_classes
         self.input_dim = input_dim
         self.batch_size = batch_size
+        self.num_hidden = num_hidden
         
         self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim), requires_grad=True)
         self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden), requires_grad=True)
@@ -70,7 +71,7 @@ class VanillaRNN(nn.Module):
             # print(f'x shape {x.shape} step shape {x[:,step].shape} wrong? {x[:,step:].shape}')
            
             hidden = self.tanh(self.W_hx @ x[:,step].reshape(1, -1)  + self.W_hh @ hidden + self.b_h)
-            h = torch.zeros((num_hidden, batch_size), requires_grad=True)
+            h = torch.zeros((self.num_hidden, self.batch_size), requires_grad=True).to(self.device)
             hidden = h + hidden
             self.grad_hidden_list.append(h)
             # sys.exit(0)

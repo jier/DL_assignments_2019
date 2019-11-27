@@ -26,7 +26,7 @@ import numpy as np
 
 class LSTM(nn.Module):
 
-    def __init__(self, seq_length, input_dim, num_hidden, num_classes,batch_size, device='cpu'):
+    def __init__(self, seq_length, input_dim, num_hidden, num_classes,batch_size, device):
         super(LSTM, self).__init__()
 
         # Initialization here ...
@@ -34,6 +34,7 @@ class LSTM(nn.Module):
         self.input_dim = input_dim
         self.num_hidden = num_hidden
         self.batch_size = batch_size
+        self.device = device
 
       
         # hidden layer, no backprop
@@ -94,7 +95,7 @@ class LSTM(nn.Module):
 
             c = g_t * i_t + c * f_t
             h = self.tanh(c) * o_t
-            h_ = torch.zeros(self.num_hidden, self.batch_size).to(device)
+            h_ = torch.zeros(self.num_hidden, self.batch_size).to(self.device)
             h = h_ + h 
             self.grad_hidden_list.append(h_)
 
