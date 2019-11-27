@@ -32,11 +32,13 @@ class LSTM(nn.Module):
         # Initialization here ...
         self.seq_length = seq_length
         self.input_dim = input_dim
+        self.num_hidden = num_hidden
         self.batch_size = batch_size
 
       
         # hidden layer, no backprop
         self.h = torch.zeros(num_hidden, batch_size).to(device)
+        self.grad_hidden_list = []
         self.c = torch.zeros((num_hidden,batch_size)).to(device)
 
         # weights
@@ -92,6 +94,9 @@ class LSTM(nn.Module):
 
             c = g_t * i_t + c * f_t
             h = self.tanh(c) * o_t
+            h_ = torch.zeros(self.num_hidden, self.batch_size).to(device)
+            h = h_ + h 
+            self.grad_hidden_list.append(h_)
 
         out = h @ self.W_ph + self.b_p
 
