@@ -92,10 +92,10 @@ def train(config):
                         accuracy, loss
                 ))
 
-            if step == config.sample_every:
+            if step % config.sample_every == 0:
                 # Generate some sentences by sampling from the model
-                # generate_sentence(model, config, dataset)
-                pass
+                generate_sentence(model, config, dataset)
+                # pass
 
             if step == config.train_steps:
                 # If you receive a PyTorch data-loader error, check this bug report:
@@ -111,30 +111,34 @@ def generate_sentence(model, config, dataset):
         sequences = []
         for _ in range(config.seq_length):
             sequences.append(sample.item())
-            sample = torch.nn.functional.one_hot(sample)
-            sys.exit(0)
-            # if state is None:
-            #     output, state = model.forward(sample)
-            # else:
-            #     output, state = model.forward(sample, state)
-            # print(f'output shape before flatten {output.shape}')
-            # output = output.reshape(-1)
-            # print(f'output shape after flatten {output.shape}')
-            # softmax = model.softmax(output * (1 / temp))
-            # softmax_ = output.data.view(-1).div(temp).exp()
-            # print(f'diff softmax {softmax.item()} vs softmax_ {softmax_.item()} ')
+            # sample need to be long size datatype to support one hot torch operation 
+            sample = torch.nn.functional.one_hot(sample.long(),num_classes=dataset.vocab_size).float()
 
-            # sample = softmax.multinomial(1).reshape([1, 1])
+            if state is None:
+                output, state = model.forward(sample)
+            else:
+                output, state = model.forward(sample, state)
+
+            # print(f'output shape before flatten {output.shape}')
+            output = output.reshape(-1)
+            # print(f'output shape after flatten {output.shape}')
+           
+            softmax = model.softmax(output * (1 / temp))
+            # Encounter NaN at distribution not useful!!
+            # softmax_ = output.data.view(-1).div(temp).exp()
+            # print(f'diff softmax  allclose {np.allclose(softmax, softmax_)} ')
+            # sys.exit(0)
+
+            sample = softmax.multinomial(1).reshape([1, 1])
         return sequences
 
     with torch.no_grad():
         sample_sentence = np.random.randint(0, dataset.vocab_size, size=(1,1))
         sample_sentence = torch.from_numpy(sample_sentence).float()
-        print(f'sample sentence {sample_sentence}')
   
         gen_sequence = generate_sequence(model, sample_sentence, config.seq_length, config.temp)
-        # sentence = dataset.convert_to_string(gen_sequence)
-        # print(f'------GENERATED SENTENCE------- {sentence}')
+        sentence = dataset.convert_to_string(gen_sequence)
+        print(f'------GENERATED SENTENCE------- {sentence}\n')
 
  ################################################################################
  ################################################################################
@@ -165,7 +169,7 @@ if __name__ == "__main__":
     # Misc params
     parser.add_argument('--summary_path', type=str, default="./summaries/", help='Output path for summaries')
     parser.add_argument('--print_every', type=int, default=5, help='How often to print training progress')
-    parser.add_argument('--sample_every', type=int, default=10, help='How often to sample from the model')
+    parser.add_argument('--sample_every', type=int, default=100, help='How often to sample from the model')
     parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
     parser.add_argument('--epochs', type=int, default=20, help='How many epochs needed to help LSTM converges')
     parser.add_argument('--temp', type=int, default=1e-3, help='Temperature to sample during softmax')
