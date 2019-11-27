@@ -95,6 +95,4 @@ class LSTM(nn.Module):
 
         out = h @ self.W_ph + self.b_p
 
-        # NOTE: nn.CrossEntropyLoss() already has a softmax layer
-        # out = self.softmax(p_t)
         return out

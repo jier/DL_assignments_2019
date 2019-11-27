@@ -36,11 +36,11 @@ class VanillaRNN(nn.Module):
         self.input_dim = input_dim
         self.batch_size = batch_size
         
-        self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim), requires_grad=True).to(self.device)
-        self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden), requires_grad=True).to(self.device)
-        self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes), requires_grad=True).to(self.device)
+        self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim), requires_grad=True)
+        self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden), requires_grad=True)
+        self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes), requires_grad=True)
 
-        self.hidden = torch.zeros((num_hidden, batch_size), requires_grad=True).to(self.device)
+        self.hidden = torch.zeros((num_hidden, batch_size), requires_grad=True)
         
          # Xavier bound 
         bound = np.sqrt(1 / num_hidden)
