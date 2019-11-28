@@ -7,7 +7,7 @@ import torch
 
 def gen_data(config):
 
-    LENGTHS = range(5, 45)
+    LENGTHS = range(5, 30)
     MODEL_TYPES = ['RNN']
     accuracies = []
 
@@ -22,10 +22,10 @@ def gen_data(config):
         for l in LENGTHS:
             accuracy_temp = []
             config.input_length = l
-            for iter in range(l):
+            for iter in range(5):
                 np.random.seed(iter *l)
                 torch.manual_seed(iter * l)
-                print("----------------------------------------------INPUT LENGTH ", l, "------------------------\n")
+                print("----------------------------------------------INPUT LENGTH ", l, " iteration ", iter, " ------------------------\n")
                 accuracy = train(config)
                 accuracy_temp.append(accuracy.detach().cpu())
             print("-------------------- DONE iterating for length ", l, "-----------------------------------------\n")
