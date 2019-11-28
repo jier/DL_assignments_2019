@@ -130,7 +130,7 @@ def train(config):
                     writer.writerow([config.model_type, step, config.input_length, accuracy.item(), loss.item()])
 
         
-        if  loss <= 5e-3 and not all([ i is 1.0 for i in acc_check[5:] if len(acc_check) >=5]) :
+        if  loss <= 1e-3 and not all([ i is 1.0 for i in acc_check[5:] if len(acc_check) >=5]) :
             break
         if step == config.train_steps:
             # If you receive a PyTorch data-loader error, check this bug report:
