@@ -23,6 +23,8 @@ sys.path.append("..")
 import time
 from datetime import datetime
 import argparse
+import operator
+from functools import reduce
 
 import numpy as np
 
@@ -32,11 +34,13 @@ from torch.utils.data import DataLoader
 
 from dataset import TextDataset
 from model import TextGenerationModel
-
+from torch.utils.tensorboard import SummaryWriter
 ################################################################################
 
 def train(config):
 
+    if config.tensorboard:
+        writer = SummaryWriter(config.summary + datetime.now().strftime("%Y%m%d-%H%M%S"))
     # Initialize the device which to run the model on
     device = torch.device(config.device)
 
@@ -46,7 +50,7 @@ def train(config):
 
     # Initialize the model that we are going to use
     model = TextGenerationModel(config.batch_size, config.seq_length, dataset.vocab_size,
-                 lstm_num_hidden=config.lstm_num_hidden, lstm_num_layers=config.lstm_num_layers, device=config.device )  # fixme
+                 lstm_num_hidden=config.lstm_num_hidden, lstm_num_layers=config.lstm_num_layers, device=config.device )  
 
   
 
@@ -91,54 +95,85 @@ def train(config):
                         int(config.train_steps), epoch, config.batch_size, examples_per_second,
                         accuracy, loss
                 ))
+                if config.tensorboard:
+                    writer.add_scalar('training_loss', loss, step)
+                    writer.add_scalar('accuracy', accuracy, step)
 
             if step % config.sample_every == 0:
                 # Generate some sentences by sampling from the model
+                # print(f'shape state {state[1].shape}')
+                # sys.exit(0)
                 generate_sentence(model, config, dataset)
                 # pass
 
             if step == config.train_steps:
                 # If you receive a PyTorch data-loader error, check this bug report:
                 # https://github.com/pytorch/pytorch/pull/9655
+                print('Done training.')
                 break
 
-    print('Done training.')
+    
 
 def generate_sentence(model, config, dataset):
-    def generate_sequence(model, sample, seq_length, temp):
+
+    def generate_sequence(model, sample, seq_length, temp, input_sentence=[]):
         
         state = None
-        sequences = []
-        for _ in range(config.seq_length):
-            sequences.append(sample.item())
+        sentence = sample
+        start = 1
+
+        # To avoid ovewriting given input sentences
+        if len(input_sentence) is not 0:
+            start = len(input_sentence)
+
+        for i in range(start, config.desired_seq_length + len(input_sentence)):
             # sample need to be long size datatype to support one hot torch operation 
-            sample = torch.nn.functional.one_hot(sample.long(),num_classes=dataset.vocab_size).float()
+            sample = torch.nn.functional.one_hot(sentence.long(), num_classes=dataset.vocab_size).float()
 
             if state is None:
                 output, state = model.forward(sample)
             else:
                 output, state = model.forward(sample, state)
+   
+            output = output.permute(1, 0, 2)
 
-            # print(f'output shape before flatten {output.shape}')
-            output = output.reshape(-1)
-            # print(f'output shape after flatten {output.shape}')
-           
-            softmax = model.softmax(output * (1 / temp))
-            # Encounter NaN at distribution not useful!!
-            # softmax_ = output.data.view(-1).div(temp).exp()
-            # print(f'diff softmax  allclose {np.allclose(softmax, softmax_)} ')
-            # sys.exit(0)
+            if config.temp is None:
+                # Greedy 
+                prediction = output[i-1]
+                prediction = prediction.argmax(dim=-1)
+                # Use in the loop 2D list otherwise dimension issue in forward expected 1 x B  x I  otherwise B x I
+                sentence[0][i] = prediction
 
-            sample = softmax.multinomial(1).reshape([1, 1])
-        return sequences
+            else:
+                # Temperature
+                softmax = model.softmax(output * (1 / temp))
+                # Encounter NaN at distribution not useful!!
+                # softmax_ = output.data.view(-1).div(temp).exp()
+                # print(f'diff softmax  allclose {np.allclose(softmax, softmax_)} ')
+                # sys.exit(0)
+
+                sample = softmax.multinomial(1).reshape([1, 1])
+        # indices needs to be int otherwise Keyerror is raised
+        return sentence[0].int()
 
     with torch.no_grad():
-        sample_sentence = np.random.randint(0, dataset.vocab_size, size=(1,1))
-        sample_sentence = torch.from_numpy(sample_sentence).float()
-  
-        gen_sequence = generate_sequence(model, sample_sentence, config.seq_length, config.temp)
-        sentence = dataset.convert_to_string(gen_sequence)
-        print(f'------GENERATED SENTENCE------- {sentence}\n')
+        if not config.input_sentence:
+            sample_sentence = np.random.randint(0, dataset.vocab_size, size=(1, config.desired_seq_length))
+            sample_sentence = torch.from_numpy(sample_sentence).float()
+            gen_sequence = generate_sequence(model, sample_sentence, config.seq_length, config.temp, [])
+        else:
+            input_chars = torch.tensor([dataset._char_to_ix[char] for char in config.input_sentence]).unsqueeze(0)
+            sample_sentence = np.random.randint(0, dataset.vocab_size, size=(1, config.desired_seq_length + len(input_chars)) )
+            sample_sentence = sample_sentence[0:len(input_chars)]
+            sample_sentence = torch.from_numpy(sample_sentence).float()
+            gen_sequence = generate_sequence(model, sample_sentence, config.seq_length, config.temp, input_chars)
+    
+        
+        # Write to numpy because dataset expect numpy array dtype
+        sentence = dataset.convert_to_string(gen_sequence.detach().cpu().numpy())
+
+        print("---------GENERATED SENTENCE---------------------\n",file=open(config.sentence_file, "a"))
+        print(f' {sentence}\n', file=open(config.sentence_file, "a"))
 
  ################################################################################
  ################################################################################
@@ -172,7 +207,12 @@ if __name__ == "__main__":
     parser.add_argument('--sample_every', type=int, default=100, help='How often to sample from the model')
     parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
     parser.add_argument('--epochs', type=int, default=20, help='How many epochs needed to help LSTM converges')
-    parser.add_argument('--temp', type=int, default=1e-3, help='Temperature to sample during softmax')
+    parser.add_argument('--temp', type=float, default=None, help='Temperature to sample during softmax') # 1e-3
+    parser.add_argument('--desired_seq_length', type=int, default=50, help='Length of an input sequence to generate')
+    parser.add_argument('--sentence_file', type=str, default="gen_text_nieuw.txt", help='Length of an input sequence')
+    parser.add_argument('--input_sentence', type=str, default="", help='User input sentence to starts prediction every sentence in lower caption')
+    parser.add_argument('--summary', type=str, default='runs/Sentences', help='Specify where to write out tensorboard summaries')
+    parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
 
     config = parser.parse_args()
 
