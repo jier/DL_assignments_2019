@@ -171,7 +171,7 @@ def generate_sentence(model, config, dataset):
         
         # Write to numpy because dataset expect numpy array dtype
         sentence = dataset.convert_to_string(gen_sequence.detach().cpu().numpy())
-
+   
         print("---------GENERATED SENTENCE---------------------\n",file=open(config.sentence_file, "a"))
         print(f' {sentence}\n', file=open(config.sentence_file, "a"))
 
@@ -216,5 +216,7 @@ if __name__ == "__main__":
 
     config = parser.parse_args()
 
+    if config.sentence_file:
+        print(f"------------------FROM TEXT FILE {config.txt_file}--------------------------------------",file=open(config.sentence_file, "a")) 
     # Train the model
     train(config)
