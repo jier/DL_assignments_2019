@@ -174,12 +174,8 @@ def generate_sentence(step, model, config, dataset):
         sentence = dataset.convert_to_string(gen_sequence.detach().cpu().numpy())
    
         print("---------GENERATED SENTENCE---------------------\n",file=open(config.sentence_file, "a"))
-<<<<<<< HEAD
         print(f' {sentence}\n', file=open(config.sentence_file, "a"))
-        print(f'GENERATED SENTENCE {sentence}\n')
-=======
-        print(f'At step {step} ------- {sentence}\n', file=open(config.sentence_file, "a"))
->>>>>>> 308c22ea350cb3dc7e0b00ef4aafc5188b0d6cc5
+        print(f'GENERATED SENTENCE at step {step} ------- {sentence}\n', file=open(config.sentence_file, "a"))
 
  ################################################################################
  ################################################################################
