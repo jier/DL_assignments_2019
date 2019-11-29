@@ -127,12 +127,12 @@ def generate_sentence(model, config, dataset):
         start = 1
 
         # To avoid ovewriting given input sentences
-        if len(input_sentence) is != 0:
+        if len(input_sentence) is not 0:
             start = len(input_sentence)
 
         for i in range(start, config.desired_seq_length + len(input_sentence)):
             # sample need to be long size datatype to support one hot torch operation 
-            sample = torch.nn.functional.one_hot(sentence_char.long(), num_classes=dataset.vocab_size).float()
+            sample = torch.nn.functional.one_hot(sentence_char.long(), num_classes=dataset.vocab_size).float().to(config.device)
 
             if state is None:
                 output, state = model.forward(sample)
@@ -152,10 +152,10 @@ def generate_sentence(model, config, dataset):
                 # Temperature
                 softmax_prob = torch.nn.functional.softmax(output[i -1]  / temp, dim=1) 
                 prediction = torch.multinomial(softmax_prob,1)[0]
-                sentence[:,i] = prediction
+                sentence_char[:,i] = prediction
 
         # indices needs to be int otherwise Keyerror is raised
-        return sentence[0].int()
+        return sentence_char[0].int()
 
     with torch.no_grad():
         if not config.input_sentence:
@@ -175,6 +175,7 @@ def generate_sentence(model, config, dataset):
    
         print("---------GENERATED SENTENCE---------------------\n",file=open(config.sentence_file, "a"))
         print(f' {sentence}\n', file=open(config.sentence_file, "a"))
+        print(f'GENERATED SENTENCE {sentence}\n')
 
  ################################################################################
  ################################################################################
