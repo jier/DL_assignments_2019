@@ -175,7 +175,7 @@ def generate_sentence(step, model, config, dataset):
    
         print("---------GENERATED SENTENCE---------------------\n",file=open(config.sentence_file, "a"))
         print(f' {sentence}\n', file=open(config.sentence_file, "a"))
-        print(f'GENERATED SENTENCE at step {step} ------- {sentence}\n', file=open(config.sentence_file, "a"))
+        print(f'GENERATED SENTENCE at step {step} ------- {sentence}\n')
 
  ################################################################################
  ################################################################################
