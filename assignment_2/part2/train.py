@@ -35,6 +35,7 @@ from torch.utils.data import DataLoader
 from dataset import TextDataset
 from model import TextGenerationModel
 from torch.utils.tensorboard import SummaryWriter
+from preprocess import preprocess
 ################################################################################
 
 def train(config):
@@ -119,16 +120,19 @@ def generate_sentence(model, config, dataset):
     def generate_sequence(model, sample, seq_length, temp, input_sentence=[]):
         
         state = None
-        sentence = sample
+        # Gather only the last character of the sentence to generate a new sentence
+        ones = torch.ones(sample.shape[1]).reshape(1, -1)
+        ones[:,0] = sample[:,-1]
+        sentence_char = ones
         start = 1
 
         # To avoid ovewriting given input sentences
-        if len(input_sentence) is not 0:
+        if len(input_sentence) is != 0:
             start = len(input_sentence)
 
         for i in range(start, config.desired_seq_length + len(input_sentence)):
             # sample need to be long size datatype to support one hot torch operation 
-            sample = torch.nn.functional.one_hot(sentence.long(), num_classes=dataset.vocab_size).float()
+            sample = torch.nn.functional.one_hot(sentence_char.long(), num_classes=dataset.vocab_size).float()
 
             if state is None:
                 output, state = model.forward(sample)
@@ -142,17 +146,14 @@ def generate_sentence(model, config, dataset):
                 prediction = output[i-1]
                 prediction = prediction.argmax(dim=-1)
                 # Use in the loop 2D list otherwise dimension issue in forward expected 1 x B  x I  otherwise B x I
-                sentence[0][i] = prediction
+                sentence_char[:,i] = prediction
 
             else:
                 # Temperature
-                softmax = model.softmax(output * (1 / temp))
-                # Encounter NaN at distribution not useful!!
-                # softmax_ = output.data.view(-1).div(temp).exp()
-                # print(f'diff softmax  allclose {np.allclose(softmax, softmax_)} ')
-                # sys.exit(0)
+                softmax_prob = torch.nn.functional.softmax(output[i -1]  / temp, dim=1) 
+                prediction = torch.multinomial(softmax_prob,1)[0]
+                sentence[:,i] = prediction
 
-                sample = softmax.multinomial(1).reshape([1, 1])
         # indices needs to be int otherwise Keyerror is raised
         return sentence[0].int()
 
@@ -179,7 +180,8 @@ def generate_sentence(model, config, dataset):
  ################################################################################
 
 if __name__ == "__main__":
-
+    torch.manual_seed(42)
+    np.random.seed(42)
     # Parse training configuration
     parser = argparse.ArgumentParser()
 
@@ -215,7 +217,7 @@ if __name__ == "__main__":
     parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
 
     config = parser.parse_args()
-
+    config.txt_file  = preprocess(config.txt_file)
     if config.sentence_file:
         print(f"------------------FROM TEXT FILE {config.txt_file}--------------------------------------",file=open(config.sentence_file, "a")) 
     # Train the model
