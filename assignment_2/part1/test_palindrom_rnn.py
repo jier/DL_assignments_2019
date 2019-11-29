@@ -56,7 +56,7 @@ if __name__ == "__main__":
     # Debug material
     parser.add_argument('--csv', type=str, default='test_palindrome_rnn.csv')
     parser.add_argument('--summary', type=str, default='runs/RNN', help='Specify where to write out tensorboard summaries')
-    parser.add_argument('--tensorboard', type=int, default=1, help='Use tensorboard for one run, default do not show')
+    parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
     parser.add_argument('--record_plot', type=int, default=0, help='Useful when training to save csv data to plot')
     config = parser.parse_args()
 
