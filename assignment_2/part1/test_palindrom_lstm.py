@@ -7,7 +7,7 @@ import torch
 
 def gen_data(config):
 
-    LENGTHS = range(5, 30, 5)
+    LENGTHS = range(5, 60, 5)
     MODEL_TYPES = ['LSTM']
     accuracies = []
 
@@ -54,9 +54,9 @@ if __name__ == "__main__":
     parser.add_argument('--max_norm', type=float, default=10.0)
     parser.add_argument('--device', type=str, default="cuda:0", help="Training device 'cpu' or 'cuda:0'")
     # Debug material
-    parser.add_argument('--csv', type=str, default='test_palindrome_lstm.csv')
+    parser.add_argument('--csv', type=str, default='test_palindrome_lstm_60.csv')
     parser.add_argument('--summary', type=str, default='runs/LSTM', help='Specify where to write out tensorboard summaries')
-    parser.add_argument('--tensorboard', type=int, default=1, help='Use tensorboard for one run, default do not show')
+    parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
     parser.add_argument('--record_plot', type=int, default=0, help='Useful when training to save csv data to plot')
     config = parser.parse_args()
 
