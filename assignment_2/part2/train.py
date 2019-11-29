@@ -35,6 +35,7 @@ from torch.utils.data import DataLoader
 from dataset import TextDataset
 from model import TextGenerationModel
 from torch.utils.tensorboard import SummaryWriter
+from preprocess import preprocess
 ################################################################################
 
 def train(config):
@@ -146,13 +147,14 @@ def generate_sentence(model, config, dataset):
 
             else:
                 # Temperature
-                softmax = model.softmax(output * (1 / temp))
-                # Encounter NaN at distribution not useful!!
-                # softmax_ = output.data.view(-1).div(temp).exp()
-                # print(f'diff softmax  allclose {np.allclose(softmax, softmax_)} ')
-                # sys.exit(0)
+                # Generate only ones??
+                # softmax = torch.softmax(output  / temp, dim=1) ??
+                # softmax = output[-1].squeeze().data.div(temp).exp() ??
+                softmax = output.squeeze().data.div(temp).exp()
 
-                sample = softmax.multinomial(1).reshape([1, 1])
+                prediction = torch.multinomial(softmax,1)[0]
+                sentence[:,i] = prediction
+
         # indices needs to be int otherwise Keyerror is raised
         return sentence[0].int()
 
@@ -179,7 +181,8 @@ def generate_sentence(model, config, dataset):
  ################################################################################
 
 if __name__ == "__main__":
-
+    torch.manual_seed(42)
+    np.random.seed(42)
     # Parse training configuration
     parser = argparse.ArgumentParser()
 
@@ -215,7 +218,7 @@ if __name__ == "__main__":
     parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
 
     config = parser.parse_args()
-
+    config.txt_file  = preprocess(config.txt_file)
     if config.sentence_file:
         print(f"------------------FROM TEXT FILE {config.txt_file}--------------------------------------",file=open(config.sentence_file, "a")) 
     # Train the model

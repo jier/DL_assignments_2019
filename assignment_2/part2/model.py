@@ -43,7 +43,6 @@ class TextGenerationModel(nn.Module):
         ).to(self.device)
 
         self.linear = nn.Linear(lstm_num_hidden, vocabulary_size).to(self.device)
-        self.softmax = nn.Softmax(dim=0)
 
     def forward(self, x, state=None):
         # Implementation here...
