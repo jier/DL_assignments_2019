@@ -120,16 +120,19 @@ def generate_sentence(model, config, dataset):
     def generate_sequence(model, sample, seq_length, temp, input_sentence=[]):
         
         state = None
-        sentence = sample
+        # Gather only the last character of the sentence to generate a new sentence
+        ones = torch.ones(sample.shape[1]).reshape(1, -1)
+        ones[:,0] = sample[:,-1]
+        sentence_char = ones
         start = 1
 
         # To avoid ovewriting given input sentences
-        if len(input_sentence) is not 0:
+        if len(input_sentence) is != 0:
             start = len(input_sentence)
 
         for i in range(start, config.desired_seq_length + len(input_sentence)):
             # sample need to be long size datatype to support one hot torch operation 
-            sample = torch.nn.functional.one_hot(sentence.long(), num_classes=dataset.vocab_size).float()
+            sample = torch.nn.functional.one_hot(sentence_char.long(), num_classes=dataset.vocab_size).float()
 
             if state is None:
                 output, state = model.forward(sample)
@@ -143,16 +146,12 @@ def generate_sentence(model, config, dataset):
                 prediction = output[i-1]
                 prediction = prediction.argmax(dim=-1)
                 # Use in the loop 2D list otherwise dimension issue in forward expected 1 x B  x I  otherwise B x I
-                sentence[0][i] = prediction
+                sentence_char[:,i] = prediction
 
             else:
                 # Temperature
-                # Generate only ones??
-                # softmax = torch.softmax(output  / temp, dim=1) ??
-                # softmax = output[-1].squeeze().data.div(temp).exp() ??
-                softmax = output.squeeze().data.div(temp).exp()
-
-                prediction = torch.multinomial(softmax,1)[0]
+                softmax_prob = torch.nn.functional.softmax(output[i -1]  / temp, dim=1) 
+                prediction = torch.multinomial(softmax_prob,1)[0]
                 sentence[:,i] = prediction
 
         # indices needs to be int otherwise Keyerror is raised
