@@ -127,10 +127,8 @@ def generate_sentence(step, model, config, dataset):
         # To avoid ovewriting given input sentences
         if len(input_sentence) is not 0:
             start = len(input_sentence)
-            ones = torch.ones(len(input_sentence)+sample.shape[1])).reshape(1, -1)
-            print(ones.shape, ones[len(input_sentence),:],ones[len(input_sentence):], ones[:,len(input_sentence)])
-            sys.exit(0)
-            ones[len(input_sentence),:] = sample[:,-1]
+            ones = torch.ones(len(input_sentence)+sample.shape[1]).reshape(1, -1)
+            ones[:,len(input_sentence)] = sample[:,-1]
         else:
             # Gather only the last character of the sentence to generate a new sentence
             ones = torch.ones(sample.shape[1]).reshape(1, -1)
@@ -170,7 +168,7 @@ def generate_sentence(step, model, config, dataset):
             sample_sentence = torch.from_numpy(sample_sentence).float()
             gen_sequence = generate_sequence(model, sample_sentence, config.seq_length, config.temp, [])
         else:
-            input_chars = torch.tensor([dataset._char_to_ix[char] for char in config.input_sentence]).unsqueeze(0)
+            input_chars = torch.tensor([dataset._char_to_ix[char] for char in config.input_sentence])
             sample_sentence = np.random.randint(0, dataset.vocab_size, size=(1, config.desired_seq_length + len(input_chars)) )
             sample_sentence = sample_sentence[0:len(input_chars)]
             sample_sentence = torch.from_numpy(sample_sentence).float()
