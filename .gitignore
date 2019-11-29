@@ -393,7 +393,7 @@ runs/
 .vscode
 
 #Ignore LISA output
-*.out
+# *.out
 
 # Ignore Latex auxillary files output
 *.aux 

@@ -178,8 +178,7 @@ def generate_sentence(step, model, config, dataset):
         # Write to numpy because dataset expect numpy array dtype
         sentence = dataset.convert_to_string(gen_sequence.detach().cpu().numpy())
    
-        print("---------GENERATED SENTENCE---------------------\n",file=open(config.sentence_file, "a"))
-        print(f' {sentence}\n', file=open(config.sentence_file, "a"))
+        print(f'---------GENERATED SENTENCE--------------------- at\ {step} {sentence}\n', file=open(config.sentence_file, "a"))
         print(f'GENERATED SENTENCE at step {step} ------- {sentence}\n')
 
  ################################################################################
@@ -217,10 +216,10 @@ if __name__ == "__main__":
     parser.add_argument('--epochs', type=int, default=20, help='How many epochs needed to help LSTM converges')
     parser.add_argument('--temp', type=float, default=None, help='Temperature to sample during softmax') # 1e-3
     parser.add_argument('--desired_seq_length', type=int, default=50, help='Length of an input sequence to generate')
-    parser.add_argument('--sentence_file', type=str, default="gen_text_nieuw.txt", help='Length of an input sequence')
+    parser.add_argument('--sentence_file', type=str, default="gen_sentence.txt", help='Length of an input sequence')
     parser.add_argument('--input_sentence', type=str, default="", help='User input sentence to starts prediction every sentence in lower caption')
     parser.add_argument('--summary', type=str, default='runs/Sentences', help='Specify where to write out tensorboard summaries')
-    parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
+    parser.add_argument('--tensorboard', type=int, default=1, help='Use tensorboard for one run, default do not show')
 
     config = parser.parse_args()
     config.txt_file  = preprocess(config.txt_file)
