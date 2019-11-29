@@ -104,7 +104,7 @@ def train(config):
                 # Generate some sentences by sampling from the model
                 # print(f'shape state {state[1].shape}')
                 # sys.exit(0)
-                generate_sentence(model, config, dataset)
+                generate_sentence(step, model, config, dataset)
                 # pass
 
             if step == config.train_steps:
@@ -115,7 +115,7 @@ def train(config):
 
     
 
-def generate_sentence(model, config, dataset):
+def generate_sentence(step, model, config, dataset):
 
     def generate_sequence(model, sample, seq_length, temp, input_sentence=[]):
         
@@ -127,7 +127,7 @@ def generate_sentence(model, config, dataset):
         start = 1
 
         # To avoid ovewriting given input sentences
-        if len(input_sentence) is != 0:
+        if len(input_sentence) is not 0:
             start = len(input_sentence)
 
         for i in range(start, config.desired_seq_length + len(input_sentence)):
@@ -174,7 +174,7 @@ def generate_sentence(model, config, dataset):
         sentence = dataset.convert_to_string(gen_sequence.detach().cpu().numpy())
    
         print("---------GENERATED SENTENCE---------------------\n",file=open(config.sentence_file, "a"))
-        print(f' {sentence}\n', file=open(config.sentence_file, "a"))
+        print(f'At step {step} ------- {sentence}\n', file=open(config.sentence_file, "a"))
 
  ################################################################################
  ################################################################################
