@@ -120,15 +120,22 @@ def generate_sentence(step, model, config, dataset):
     def generate_sequence(model, sample, seq_length, temp, input_sentence=[]):
         
         state = None
-        # Gather only the last character of the sentence to generate a new sentence
-        ones = torch.ones(sample.shape[1]).reshape(1, -1)
-        ones[:,0] = sample[:,-1]
-        sentence_char = ones
+    
+        
         start = 1
 
         # To avoid ovewriting given input sentences
         if len(input_sentence) is not 0:
             start = len(input_sentence)
+            ones = torch.ones(len(input_sentence)+sample.shape[1])).reshape(1, -1)
+            print(ones.shape, ones[len(input_sentence),:],ones[len(input_sentence):], ones[:,len(input_sentence)])
+            sys.exit(0)
+            ones[len(input_sentence),:] = sample[:,-1]
+        else:
+            # Gather only the last character of the sentence to generate a new sentence
+            ones = torch.ones(sample.shape[1]).reshape(1, -1)
+            ones[:,0] = sample[:,-1]
+        sentence_char = ones
 
         for i in range(start, config.desired_seq_length + len(input_sentence)):
             # sample need to be long size datatype to support one hot torch operation 

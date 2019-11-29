@@ -79,18 +79,17 @@ def grads_over_time(config):
     # torch.manual_seed(42)
     # np.random.seed(42)
     dataset = PalindromeDataset(config.input_length+1)
-    data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
-    acc_check = []
     # Setup the loss 
     criterion = torch.nn.CrossEntropyLoss()
 
     # Add more code here ...
-    optimizer.zero_grad()
+   
     # Add more code here ...0
-    batch_inputs = batch_inputs.to(device)
-    batch_targets = batch_targets.to(device)
+    batch_inputs, batch_targets = dataset[0]
+    batch_inputs = torch.from_numpy(batch_inputs).unsqueeze(0).to(device)
+    batch_targets = torch.from_numpy(np.array([batch_targets])).to(device)
+
     out = model.forward(batch_inputs)
-    # print(f'forward output {out.shape}, batch input shape {batch_inputs.shape}, batch_targets.shape {batch_targets.shape}')
     loss = criterion(out, batch_targets)
     loss.backward()
     ############################################################################
@@ -98,7 +97,7 @@ def grads_over_time(config):
     ############################################################################
     torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=config.max_norm)
     ############################################################################
-
+    optimizer.zero_grad()
     optimizer.step()
     gradient_list = []
     for hidden_grad in model.grad_hidden_list:
@@ -107,7 +106,7 @@ def grads_over_time(config):
 
     
 
-    return  grad_hidden_list
+    return  gradient_list
     
 
 
@@ -121,7 +120,7 @@ if __name__ == "__main__":
 
     # Model params
     parser.add_argument('--model_type', type=str, default="RNN", help="Model type, should be 'RNN' or 'LSTM'")
-    parser.add_argument('--input_length', type=int, default=5, help='Length of an input sequence')
+    parser.add_argument('--input_length', type=int, default=10, help='Length of an input sequence')
     parser.add_argument('--input_dim', type=int, default=1, help='Dimensionality of input sequence') # 1
     parser.add_argument('--num_classes', type=int, default=10, help='Dimensionality of output sequence')
     parser.add_argument('--num_hidden', type=int, default=128, help='Number of hidden units in the model')
@@ -151,4 +150,4 @@ if __name__ == "__main__":
     ax.legend()
 
     plt.savefig('hidden_gradients.pdf', format='pdf')
-    plt.show()
+    

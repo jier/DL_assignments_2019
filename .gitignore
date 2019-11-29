@@ -394,3 +394,11 @@ runs/
 
 #Ignore LISA output
 *.out
+
+# Ignore Latex auxillary files output
+*.aux 
+*.bbl 
+*.blg 
+*.fls 
+*.fdb_latexmk
+*.synctex.gz

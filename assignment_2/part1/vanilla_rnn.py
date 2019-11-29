@@ -41,40 +41,31 @@ class VanillaRNN(nn.Module):
         self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden), requires_grad=True)
         self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes), requires_grad=True)
 
-        self.hidden = torch.zeros((num_hidden, batch_size), requires_grad=True)
-        # self.grad_hidden_list = []
+        self.grad_hidden_list = []
         
          # Xavier bound 
         bound = np.sqrt(1 / num_hidden)
         # print('bound for xavier: ', bound)
         for param in self.parameters():
-			# nn.init.orthogonal_(param)
             nn.init.uniform_(param, -bound, bound)
         
         self.b_h = nn.Parameter(torch.zeros(num_hidden, 1), requires_grad=True)
         self.b_p = nn.Parameter(torch.zeros(num_classes, 1), requires_grad=True)
 
         self.tanh = nn.Tanh()
-        # print(f"self.hidden {self.hidden.shape}, input_x_weight {self.W_hx.shape}, hidden_layer {self.W_hh.shape} ,Output {self.W_hy.shape}")
-        # sys.exit(0)
 
 
     def forward(self, x):
         # Implementation here ...
         
-        hidden = self.hidden.to(self.device)
-        # inputs = (np.arange(self.num_classes) == x[..., None].cpu().detach().numpy()).astype(int)
-        # print(f'x shape {x.shape} ') #test {x[:, : -1].shape}, new dim {x[...,None].shape}')
-        # sys.exit(0)
-        # x = x[..., None]
+        hidden = torch.zeros((self.num_hidden, x.shape[0]), requires_grad=True).to(self.device)
         for step in range(self.seq_length):
-            # print(f'x shape {x.shape} step shape {x[:,step].shape} wrong? {x[:,step:].shape}')
            
             hidden = self.tanh(self.W_hx @ x[:,step].reshape(1, -1)  + self.W_hh @ hidden + self.b_h)
-            # h = torch.zeros((self.num_hidden, self.batch_size), requires_grad=True).to(self.device)
-            # hidden = h + hidden
-            # self.grad_hidden_list.append(h)
-            # sys.exit(0)
+            h = torch.zeros((self.num_hidden, x.shape[0]), requires_grad=True).to(self.device)
+            hidden = h + hidden
+            self.grad_hidden_list.append(h)
+
         out = self.W_hy.t() @ hidden + self.b_p
 
         return out.t()
