@@ -27,7 +27,7 @@
 \usepackage{microtype}      % microtypography
 \usepackage{amsmath}
 \usepackage{graphicx}
-
+\usepackage{float}
 \title{Deep Learning Homework assignment}
 
 % The \author macro works with any number of authors. There are two commands
@@ -99,6 +99,12 @@
     The gradient w.r.t to the hidden state needs to be calculated up till the initial hidden unit while that of the output layer does not. With this in mind, managing memory and gradients value can be an issue in the hidden state. There is two case for this issue, either the gradient vanishes back through the initial layer or it explodes when going through time. 
     \item Question 2 See code implementation. 
     \item Question 3
+    \begin{figure}[H]
+      \includegraphics[width=\linewidth]{RNN_acc_.pdf}
+      \caption{RNN accuracy with different seeds where we see that the accuracy deteriorate before the length 10 of a palindrome}
+      \label{fig:rnn_acc}
+    \end{figure}
+  As we expect from Figure \ref{fig:rnn_acc}, the network is able to predict every last palindrome but it arrives at a limit where its performance deteriotate with a wide standard deviation. Eventually it arrives at a oscillating point where the memory cannot recall the complete histroy of the palindrome. Although gradient clipping has been performed, we might see the case that the gradients still vanishes and thus does not influence every next cell state to remember. 
     \item Question 4 \\
     The benefit of using RMSprop or Adam rather than SGD is that the previous optimizer take the momentum into account during training, while SGD not well tuned might oscillate to find the optimal solution. Moreover SGD updates its step according through the loss value  back-propagated, while the aforementioned optimizer utilize adaptive learning rates where there is a global learning rate and a targeted learning rate for each weight that changes during training depending on the sign between current gradient and velocity of that weight. Differently put, adaptive learning rate ensure that the change in signs of the weights during training will influence if the training is approaching a (global) minimum.  
 \end{itemize}
@@ -110,15 +116,30 @@
 
   We know from the definition that there are four different weight matrices depending on the input, hidden units and biases. Thus we will require the sum of the following; for an input matrix with dimension $d x n$, weights of hidden units $ n x n$ and biases vectors $n$. This is $4 *(d x n) + 4*( n x n) + 4 * n$  trainable parameters that are needed for training. 
   \item Question 6
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{LSTM_acc_.pdf}
+      \caption{The accuracy of LSTM where we observe a decrease of accuracy later than a regular RNN}
+      \label{fig:lstm_acc}
+  \end{figure}
+  It is from Figure \ref{fig:lstm_acc} quite the opposite compared to Figure \ref{fig:rnn_acc} where we see now a delay in deterioration after a certain length of data input. This figure has been run with the default values as the previous figure. The same behaviour as the RNN counterparts occur, but quite faster between length $20 - 50$. 
   \item Question 7
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{hidden_gradients.pdf}
+      \caption{We see when we observe the hidden layers that the LSTM grows exponentially slower than the regular RNN }
+      \label{fig:hidden_lstm_rnn}
+  \end{figure}
 \end{itemize}
+When we inspect the hidden state of both networks we exactly encounter the same delay behaviour in decay, where the LSTM decays slower than the RNN.  
 \section{Recurrent nets as Generative Model}
 
 \begin{itemize}
-  \item Question 1
-  \item Question 2
-  \item Question 3
-  \item Question 4
+  \item Question 1 \\
+  For this assignment we chose to keep the default value and only use the RMSprop optimizer with twenty epochs as the choice of the optimizer seems working well for the model as its well suited as it has an adaptive learning and uses momentum to update the gradients between layers. This is quite important for a network where there are more gradient update within the cells as between the cells.  
+  \item Question 2 See data outputs and code
+  \item Question 3 see above
+  \item Question 4 see above
 \end{itemize}
 
 \section{Graph Neural network}
