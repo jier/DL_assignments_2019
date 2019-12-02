@@ -129,7 +129,7 @@ import sys
 
 class LSTM(nn.Module):
 
-    def __init__(self, seq_length, input_dim, num_hidden, num_classes,batch_size, device):
+    def __init__(self, seq_length, input_dim, num_hidden, num_classes,batch_size,gradient_check, device):
         super(LSTM, self).__init__()
 
         # Initialization here ...
@@ -138,11 +138,13 @@ class LSTM(nn.Module):
         self.num_hidden = num_hidden
         self.batch_size = batch_size
         self.device = device
+        self.gradient_check = gradient_check
 
       
         # hidden layer, no backprop
         self.h = torch.zeros(num_hidden, batch_size).to(device)
-        self.grad_hidden_list = []
+        if self.gradient_check:
+            self.grad_hidden_list = []
         self.c = torch.zeros((num_hidden,batch_size)).to(device)
 
         # weights
@@ -186,21 +188,37 @@ class LSTM(nn.Module):
     def forward(self, x):
         # Implementation here ...
         h = self.h
-        c = torch.t(self.c)
+        if self.gradient_check:
+            c = torch.t(self.c)
+        c = self.c
         for step in range(self.seq_length):
-            x_step = x[:,step].unsqueeze(0)
-            # LSTM GATES updates
-            g_t = self.tanh(x_step @ self.W_gx + torch.t(h) @ self.W_gh + self.b_g)
-            i_t = self.sigmoid(x_step @ self.W_ix + torch.t(h) @ self.W_ih + self.b_i)
-            f_t = self.sigmoid(x_step @ self.W_fx + torch.t(h) @ self.W_fh + self.b_f)
-            o_t = self.sigmoid(x_step @ self.W_ox + torch.t(h) @self.W_oh + self.b_o)
+            
+            if self.gradient_check:
+                x_step = x[:,step].unsqueeze(0) 
+                # LSTM GATES updates For gradient Check, other dimesnion issues 
+                g_t = self.tanh(x_step @ self.W_gx + torch.t(h) @ self.W_gh + self.b_g)
+                i_t = self.sigmoid(x_step @ self.W_ix + torch.t(h) @ self.W_ih + self.b_i)
+                f_t = self.sigmoid(x_step @ self.W_fx + torch.t(h) @ self.W_fh + self.b_f)
+                o_t = self.sigmoid(x_step @ self.W_ox + torch.t(h) @self.W_oh + self.b_o)
+
+            #LSTM WITH default values without gradient check
+            x_step = x[:,step].reshape(self.batch_size, self.input_dim)
+            g_t = self.tanh(x_step @ self.W_gx +  h @ self.W_gh  + self.b_g)
+            i_t = self.sigmoid(x_step @ self.W_ix + h @ self.W_ih + self.b_i)
+            f_t = self.sigmoid(x_step @ self.W_fx + h @ self.W_fh + self.b_f)
+            o_t = self.sigmoid(x_step @ self.W_ox + h @self.W_oh + self.b_o)
             c = g_t * i_t + c * f_t
 
             h = self.tanh(c) * o_t
-            h_zero = torch.zeros(x.shape[0],self.num_hidden, requires_grad=True).to(self.device)
-            h = h_zero + h
-            self.grad_hidden_list.append(h_zero)
-            h = torch.t(h)
-        
-        out = torch.t(h) @ self.W_ph + self.b_p
+            
+            
+            if self.gradient_check:
+                h_zero = torch.zeros(x.shape[0],self.num_hidden, requires_grad=True).to(self.device)
+                h = h_zero + h
+                self.grad_hidden_list.append(h_zero)
+                h = torch.t(h)
+
+        if self.gradient_check:
+            out = torch.t(h) @ self.W_ph + self.b_p
+        out = h @ self.W_ph + self.b_p
         return out
