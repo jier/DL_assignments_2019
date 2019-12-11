@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Variational Auto Encoders}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Latent Variable Models}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Decoder: The Generative Part of VAE}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{The encoder}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Specifying the encoder}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{The Reparametrisation Trick}{section.1}% 6
+\BOOKMARK [2][-]{subsection.1.6}{Putting things together: Building VAE}{section.1}% 7
+\BOOKMARK [1][-]{section.2}{Generative Adversarial Networks}{}% 8
+\BOOKMARK [2][-]{subsection.2.1}{Training objective: A minimax Game}{section.2}% 9
+\BOOKMARK [2][-]{subsection.2.2}{Building GAN}{section.2}% 10
+\BOOKMARK [1][-]{section.3}{Generative Normalizing Flows}{}% 11
+\BOOKMARK [2][-]{subsection.3.1}{Change of variables for Neural Networks}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.2}{The coupling-layers of Real NVP}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.3}{Building a flow-based model}{section.3}% 14
+\BOOKMARK [1][-]{section.4}{Conclusion}{}% 15
