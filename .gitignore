@@ -402,3 +402,6 @@ runs/
 *.fls 
 *.fdb_latexmk
 *.synctex.gz
+
+# Ignore MNIST dataset
+data/
