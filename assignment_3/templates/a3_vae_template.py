@@ -29,8 +29,8 @@ class Encoder(nn.Module):
         """
         hidden_input = nn.functional.relu(self.input_dim_hidden(input)) #original paper uses tanh activation functions
         mean, std = self.hidden_mean(hidden_input), self.hidden_std(hidden_input)
-        assert mean.shape == (input.shape[0], self.z_dimension)
-        assert std.shape == (input.shape[0], self.z_dimension)
+        assert mean.shape[1] == self.z_dimension
+        assert std.shape[1] ==  self.z_dimension
         return mean, std
 
 
@@ -41,7 +41,7 @@ class Decoder(nn.Module):
         self.hidden_dim = hidden_dim
         self.z_dim = z_dim
         self.z_hidden_vector = nn.Linear(z_dim, hidden_dim)
-        self.hidden_linear = nn.Linear(hidden_dim, 784) # 784 input dimension of MNIST data image
+        self.hidden_linear_mean = nn.Linear(hidden_dim, 784) # 784 input dimension of MNIST data image
 
     def forward(self, input):
         """
@@ -50,10 +50,9 @@ class Decoder(nn.Module):
         Returns mean with shape [batch_size, 784].
         """
         self.transformed_input = nn.functional.relu(self.z_hidden_vector(input)) 
-        self.transformed_input_ = self.hidden_linear(self.transformed_input)
+        self.transformed_input_ = self.hidden_linear_mean(self.transformed_input)
 
         mean = torch.sigmoid(self.transformed_input_)
-        assert mean.shape == (input.shape[0], 784)
         return mean
 
 
@@ -74,19 +73,19 @@ class VAE(nn.Module):
         """
 
         #Encoding step
-        mean, std = self.encoder(input)
+        mean, std_log_var = self.encoder(input)
         epsilon = torch.randn_like(mean)
-        z = mean + torch.exp(0.5 * std) * epsilon
+        z = mean + torch.exp(0.5 * std_log_var) * epsilon
         
         #Decoding step
         encoded_sample = self.decoder(z)
 
         #Reconstruction term
-        l_recon = nn.functional.binary_cross_entropy(encoded_sample, input)
+        l_recon = nn.functional.binary_cross_entropy(encoded_sample, input,reduction='sum')/input.shape[0]
         
         #Regularised term 
         #This is different than my own derivation but is similar and its the same as the original paper, where there the use the '-' 
-        l_reg_KL = -0.5 * torch.sum(1 + std - mean.pow(2) - std.exp()) /input.shape[0]
+        l_reg_KL = -0.5 * torch.sum(1 + std_log_var - mean.pow(2) - std_log_var.exp()) /input.shape[0]
 
         average_negative_elbo = (l_recon + l_reg_KL) 
 
@@ -99,12 +98,10 @@ class VAE(nn.Module):
         used to plot the data manifold).
         """
         #  Create meshgrid of n_samples by z_dim
-        # TODO make accept more than two dimensions
-        sample_z = torch.from_numpy(norm.ppf(np.meshgrid(np.linspace(1e-9, 0.99, n_samples)))).float()
-        
+        sample_z = torch.randn(n_samples, self.z_dim)
+     
         im_means = self.decoder(sample_z)
         sampled_ims = torch.bernoulli(im_means)
-
         return sampled_ims, im_means
 
 
@@ -116,7 +113,7 @@ def epoch_iter(model, data, optimizer):
     Returns the average elbo for the complete epoch.
     """
     average_epoch_elbo = 0.0
-    for step, x_batch in enumerate(data):
+    for _, x_batch in enumerate(data):
         x_batch = x_batch.view(-1, 784)
 
         if model.training:
@@ -174,17 +171,29 @@ def main():
         #  Add functionality to plot samples from model during training.
         #  You can use the make_grid functioanlity that is already imported.
         # --------------------------------------------------------------------
-        sampled_img = model.sample(10)[0]
-        sampled_img = sampled_img.view(-1, 28, 28)
-        grid = make_grid(sampled_img, nrow=2)
-        plt.imsave('VAE_EPOCH' + str(epoch) +'.png', grid.permute(1, 2, 0).detach().numpy())
+        sampled_img = model.sample(ARGS.zdim)[0]
+        sampled_img = sampled_img.view(ARGS.zdim, 1, 28, 28)
+        grid = make_grid(sampled_img, nrow=5)
+        if epoch in [0, ARGS.epochs/2, ARGS.epochs -1]:
+            plt.imsave('VAE_EPOCH' + str(epoch) +'.png', grid.permute(1, 2, 0).detach().numpy())
     # --------------------------------------------------------------------
     #  Add functionality to plot plot the learned data manifold after
     #  if required (i.e., if zdim == 2). You can use the make_grid
     #  functionality that is already imported.
     # --------------------------------------------------------------------
+    if ARGS.zdim == 2:
+        x = norm.ppf(np.linspace(1e-9, 0.99, 20))
+        y = norm.ppf(np.linspace(1e-9, 0.99, 20))
+        mesh = np.array(np.meshgrid(x, y))
 
-    save_elbo_plot(train_curve, val_curve, 'elbo.pdf')
+        grid_tensor = torch.from_numpy(mesh.T.reshape(-1, ARGS.zdim)).float()
+        sampled_final_img = model.decoder(grid_tensor)
+        sampled_final_img = sampled_final_img.view(-1, 1, 28, 28)
+
+        final_grid = make_grid(sampled_final_img, nrow=20)
+        plt.imsave('FINAL_RESULT.pdf', final_grid.permute(1, 2, 0).detach().numpy())
+
+    # save_elbo_plot(train_curve, val_curve, 'elbo.pdf')
 
 
 if __name__ == "__main__":

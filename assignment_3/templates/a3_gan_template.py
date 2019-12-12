@@ -9,7 +9,7 @@ from torchvision import datasets
 
 
 class Generator(nn.Module):
-    def __init__(self):
+    def __init__(self, latent_dim):
         super(Generator, self).__init__()
 
         # Construct generator. You are free to experiment with your model,
@@ -27,10 +27,25 @@ class Generator(nn.Module):
         #   LeakyReLU(0.2)
         #   Linear 1024 -> 768
         #   Output non-linearity
-
+        self.layers = nn.Sequential(
+            nn.Linear(latent_dim, 128),
+            nn.LeakyReLU(0.2),
+            nn.Linear(128, 256),
+            nn.BatchNorm1d(256),
+            nn.LeakyReLU(0.2),
+            nn.Linear(256, 512),
+            nn.BatchNorm1d(512),
+            nn.LeakyReLU(0.2),
+            nn.Linear(512, 1024),
+            nn.BatchNorm1d(1024),
+            nn.LeakyReLU(0.2),
+            nn.Linear(1024, 768),
+            nn.BatchNorm1d(768),
+            nn.Sigmoid()
+        )
     def forward(self, z):
         # Generate images from z
-        pass
+        return self.layers(z)
 
 
 class Discriminator(nn.Module):
@@ -45,24 +60,55 @@ class Discriminator(nn.Module):
         #   LeakyReLU(0.2)
         #   Linear 256 -> 1
         #   Output non-linearity
+        self.layers = nn.Sequential(
+            nn.Linear(784, 512), 
+            nn.LeakyReLU(0.2),
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2),
+            nn.Linear(256, 1),
+            nn.Sigmoid()
+        )
 
     def forward(self, img):
         # return discriminator score for img
-        pass
+        return self.layers(img)
 
 
 def train(dataloader, discriminator, generator, optimizer_G, optimizer_D):
+    generator_loss = []
+    discriminator_loss = []
     for epoch in range(args.n_epochs):
         for i, (imgs, _) in enumerate(dataloader):
 
-            imgs.cuda()
+            # imgs.cuda()
+            data_img  = imgs.view(-1, 784)
+            batch_size = data_img.shape[0]
 
             # Train Generator
             # ---------------
+            latent_z = torch.randn(batch_size, args.latent_dim)
+            fake_img = generator(latent_z)
 
+            decision_discrmntor = discriminator(fake_img)
+            loss_gen = - torch.log(decision_discrmntor).sum() # could also use binary cross entropy as data is binary
+            loss_gen.clamp(min=1e-9, max=args.latent_dim)
+            optimizer_G.zero_grad()
+            loss_gen.backward()
+            optimizer_G.step()
             # Train Discriminator
             # -------------------
+            latent_z = torch.randn(batch_size, args.latent_dim)
+            fake_img = generator(latent_z)
+            fake = discriminator(fake_img)
+            real = discriminator(data_img)
+
+            loss_dscr = -(torch.log(real) + torch.log(1 - fake)).sum()
+            loss_dscr.clamp(min=1e-9, max=args.latent_dim)
             optimizer_D.zero_grad()
+            loss_dscr.backward()
+            optimizer_D.step()
+
+            #TODO what to do if discriminator is too good
 
             # Save Images
             # -----------
@@ -86,8 +132,8 @@ def main():
         datasets.MNIST('./data/mnist', train=True, download=True,
                        transform=transforms.Compose([
                            transforms.ToTensor(),
-                           transforms.Normalize((0.5, 0.5, 0.5),
-                                                (0.5, 0.5, 0.5))])),
+                           transforms.Normalize((0.5,),
+                                                (0.5,))])),
         batch_size=args.batch_size, shuffle=True)
 
     # Initialize models and optimizers

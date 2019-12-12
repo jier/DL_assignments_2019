@@ -151,13 +151,17 @@
     \end{itemize}
 \section{Generative Adversarial Networks}
     \begin{itemize}
-      \item Question 2.1
+      \item Question 2.1 \\
+      For a generator we have random noise sampled from a distribution of choice which will generate a noisy image. This image together with the image of the training set will serve as input for the discriminator which will output labels , real or fake. Effectively the discriminator should discriminate well between the generator input and the data input. 
     \end{itemize}
     \subsection{Training objective: A minimax Game}
       \begin{itemize}
-        \item Question 2.2
-        \item Question 2.3
-        \item Question 2.4
+        \item Question 2.2 \\
+        We want to deceive as well as possible the discriminator while maximize our classification power of the input data. So the generator wants to minimize its effect of the discriminator, while the discriminator wants to maximize its discriminative power over the generator. So the training objective is the sum of  the classification power of the discriminator and its discriminative power of the generator.
+        \item Question 2.3 \\
+        The value that will result after convergence with the minimax game between the generator and discriminator is  $-\log 4$ as when the discriminator cannot differentiate between \textbf{real} and \textbf{fake} it will have $\frac{1}{2} $ time to discern the labels. Combining this knowledge with equation 15, we obtain the sum of two times $-\log{2}$ which is $-\log{4}$ as stated before. 
+        \item Question 2.4 \\
+        This is the case because the discriminator is fairly certain that the generator is not the real data, the distribution generated from this generator is far from the underlying target distribution which is the image input. To solve this we rather maximize $D(G(Z))$ as this will give stronger gradients during back-propagation and thus learn faster how to fool the discriminator, so the aim is to increase the log probability of the discriminator to mistaken the generator input as the data input, rather to improve the generator impprove at discerning real from fake. The only difference with the previous emphasis is that $\mathrm{E}_{p_z(z)}\left[ \log \left( 1 - D(G(Z)) \right) \right]$ not quickly becomes $0$ thus not taking the adversiality into account. 
       \end{itemize}
     \subsection{Building GAN}
       \begin{itemize}
