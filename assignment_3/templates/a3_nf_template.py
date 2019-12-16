@@ -215,6 +215,7 @@ def epoch_iter(model, data, optimizer,device):
             # Prevent gradient vanishing 
             nn.utils.clip_grad_norm_(model.parameters(), max_norm=10)
             optimizer.step()
+        del loss 
     avg_bpd = bpd/ ((e + 1) * img.shape[1] * np.log(2))
     return avg_bpd
 
@@ -248,7 +249,7 @@ def save_bpd_plot(train_curve, val_curve, filename):
 def main():
     data = mnist()[:2]  # ignore test split
     device  = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = Model(shape=[784],device=device)
+    model = Model(shape=[784],device=device).to(device)
 
     if torch.cuda.is_available():
         model = model.cuda()
@@ -273,7 +274,7 @@ def main():
         # --------------------------------------------------------------------
         if epoch == 0 or epoch == 20 or epoch == ARGS.epochs -1:
             img = model.sample(25).detach().view(25, 1,  28, 28)
-            grid = make_grid(img, nrow=5, normalize=True).permute(1, 2, 0).detach().numpy()
+            grid = make_grid(img, nrow=5, normalize=True).permute(1, 2, 0).detach().cpu().numpy()
             plt.imsave('images_nfs/nfs_{}.png'.format(epoch), grid)
 
     # save_bpd_plot(train_curve, val_curve, 'nfs_bpd.pdf')
