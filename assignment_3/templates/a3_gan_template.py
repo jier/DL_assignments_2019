@@ -41,7 +41,6 @@ class Generator(nn.Module):
             nn.BatchNorm1d(1024),
             nn.LeakyReLU(0.2),
             nn.Linear(1024, 784),
-            nn.BatchNorm1d(784),
             nn.Tanh()
         )
     def forward(self, z):
@@ -79,6 +78,9 @@ def train(dataloader, discriminator, generator, optimizer_G, optimizer_D, device
     # TODO Make this also run on LISA
     generator_loss = []
     discriminator_loss = []
+    discriminator = discriminator.to(device)
+    generator = generator.to(device)
+
     for epoch in range(args.n_epochs):
         for i, (imgs, _) in enumerate(dataloader):
 
@@ -90,38 +92,35 @@ def train(dataloader, discriminator, generator, optimizer_G, optimizer_D, device
             # Train Generator
             # ---------------
             latent_z = torch.randn(batch_size, args.latent_dim).to(device)
-            fake_img = generator(latent_z).to(device)
+            fake_img = generator.forward(latent_z).to(device)
 
-            decision_discrmntor = discriminator(fake_img).to(device)
+            decision_discrmntor = discriminator.forward(fake_img).to(device)
             loss_gen = - torch.log(decision_discrmntor).sum() # could also use binary cross entropy as data is binary
 
             optimizer_G.zero_grad()
             loss_gen.backward()
-            torch.nn.utils.clip_grad_norm(generator.parameters(), max_norm=10)
+            # torch.nn.utils.clip_grad_norm(generator.parameters(), max_norm=10)
             optimizer_G.step()
             # Train Discriminator
             # -------------------
             latent_z = torch.randn(batch_size, args.latent_dim).to(device)
-            fake_img = generator(latent_z).to(device)
-            fake = discriminator(fake_img).to(device)
-            real = discriminator(data_img).to(device)
+            fake_img = generator.forward(latent_z).to(device)
+            fake = discriminator.forward(fake_img).to(device)
+            real = discriminator.forward(data_img).to(device)
 
             loss_dscr = -(torch.log(real) + torch.log(1 - fake)).sum()
             optimizer_D.zero_grad()
             loss_dscr.backward()
-            torch.nn.utils.clip_grad_norm(discriminator.parameters(), max_norm=10)
+            # torch.nn.utils.clip_grad_norm(discriminator.parameters(), max_norm=10)
             optimizer_D.step()
 
             generator_loss.append(loss_gen.item())
             discriminator_loss.append(loss_dscr.item())
-            # Does not change??
-            positives = (real > 0.5).sum().item()
-            negatives = (fake <= 0.5).sum().item()
+
 
             if epoch % 10 == 0:
-                print(f"Epoch {epoch}|{args.n_epochs} Enum dataloader{i} Loss G {loss_gen} Loss D {loss_dscr} Positive {positives} and Negatives {negatives}")
+                print(f"Epoch {epoch}|{args.n_epochs} Enum dataloader{i} Loss G {loss_gen} Loss D {loss_dscr}")
 
-            #TODO what to do if discriminator is too good
 
             # Save Images
             # -----------
@@ -146,7 +145,7 @@ def interpolate(device):
     temp_z = torch.T(latent_z).unsqueeze(0)
     # linear interpolate vectors
     im_interp = nn.functional.interpolate(temp_z, mode='linear', size=9, align_corners=True)
-    interp_img = generator(im_interp).to(device)
+    interp_img = generator.forward(im_interp).to(device)
     save_image(interp_img.view(-1, 1, 28, 28), 'images/interpolated.png', nrow=9, normalize=True)
 
 

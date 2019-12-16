@@ -2,6 +2,7 @@ import argparse
 from scipy.stats import norm, bernoulli
 import numpy as np 
 import sys
+import os
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
@@ -14,8 +15,9 @@ class Encoder(nn.Module):
 
     def __init__(self, hidden_dim=500, z_dim=20):
         super().__init__()
-        self.hidden_dimension = hidden_dim
+
         self.z_dimension = z_dim
+        self.relu = nn.ReLU()
         self.input_dim_hidden = nn.Linear(784, hidden_dim) # 784 input dimension of MNIST data image
         self.hidden_mean = nn.Linear(hidden_dim, z_dim)
         self.hidden_std = nn.Linear(hidden_dim, z_dim)
@@ -27,7 +29,8 @@ class Encoder(nn.Module):
         Returns mean and std with shape [batch_size, z_dim]. Make sure
         that any constraints are enforced.
         """
-        hidden_input = nn.functional.relu(self.input_dim_hidden(input)) #original paper uses tanh activation functions
+        hidden_input = self.input_dim_hidden(input)
+        hidden_input = self.relu(hidden_input) #original paper uses tanh activation functions
         mean, std = self.hidden_mean(hidden_input), self.hidden_std(hidden_input)
         assert mean.shape[1] == self.z_dimension
         assert std.shape[1] ==  self.z_dimension
@@ -38,8 +41,7 @@ class Decoder(nn.Module):
 
     def __init__(self, hidden_dim=500, z_dim=20):
         super().__init__()
-        self.hidden_dim = hidden_dim
-        self.z_dim = z_dim
+        self.relu = nn.ReLU()   
         self.z_hidden_vector = nn.Linear(z_dim, hidden_dim)
         self.hidden_linear_mean = nn.Linear(hidden_dim, 784) # 784 input dimension of MNIST data image
 
@@ -49,10 +51,11 @@ class Decoder(nn.Module):
 
         Returns mean with shape [batch_size, 784].
         """
-        self.transformed_input = nn.functional.relu(self.z_hidden_vector(input)) 
-        self.transformed_input_ = self.hidden_linear_mean(self.transformed_input)
+        hidden = self.z_hidden_vector(input)
+        self.transformed_input = self.relu(hidden) 
+        self.transformed_input = self.hidden_linear_mean(self.transformed_input)
 
-        mean = torch.sigmoid(self.transformed_input_)
+        mean = torch.sigmoid(self.transformed_input)
         return mean
 
 
@@ -158,10 +161,11 @@ def save_elbo_plot(train_curve, val_curve, filename):
 def main():
     data = bmnist()[:2]  # ignore test split
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = VAE(z_dim=ARGS.zdim, device=device)
+    model = VAE(z_dim=ARGS.zdim, device=device).to(device)
     optimizer = torch.optim.Adam(model.parameters())
 
     train_curve, val_curve = [], []
+    os.makedirs('images', exist_ok=True)
     for epoch in range(ARGS.epochs):
         elbos = run_epoch(model, data, optimizer,device)
         train_elbo, val_elbo = elbos
@@ -177,23 +181,23 @@ def main():
         sampled_img = sampled_img.view(ARGS.zdim, 1, 28, 28)
         grid = make_grid(sampled_img, nrow=5)
         if epoch  == 0 or epoch == ARGS.epochs/2 or epoch == ARGS.epochs -1:
-            plt.imsave('images/VAE_EPOCH_' + str(epoch) +'.png', grid.permute(1, 2, 0).detach().numpy())
+            plt.imsave('images/VAE_EPOCH_' + str(epoch) +'.png', grid.permute(1, 2, 0).detach().cpu().numpy())
     # --------------------------------------------------------------------
     #  Add functionality to plot plot the learned data manifold after
     #  if required (i.e., if zdim == 2). You can use the make_grid
     #  functionality that is already imported.
     # --------------------------------------------------------------------
-    if ARGS.zdim_plot == 2:
+    if ARGS.zdim== 2:
         x = norm.ppf(np.linspace(1e-9, 0.99, 20))
         y = norm.ppf(np.linspace(1e-9, 0.99, 20))
         mesh = np.array(np.meshgrid(x, y))
 
-        grid_tensor = torch.from_numpy(mesh.T.reshape(-1, ARGS.zdim_plot)).float().to(device)
+        grid_tensor = torch.from_numpy(mesh.T.reshape(-1, 2)).float().to(device)
         sampled_final_img = model.decoder(grid_tensor)
         sampled_final_img = sampled_final_img.view(-1, 1, 28, 28)
 
         final_grid = make_grid(sampled_final_img, nrow=20)
-        plt.imsave('FINAL_RESULT.pdf', final_grid.permute(1, 2, 0).detach().numpy())
+        plt.imsave('FINAL_RESULT.png', final_grid.permute(1, 2, 0).detach().cpu().numpy())
 
     save_elbo_plot(train_curve, val_curve, 'elbo.pdf')
 
@@ -204,8 +208,6 @@ if __name__ == "__main__":
                         help='max number of epochs')
     parser.add_argument('--zdim', default=20, type=int,
                         help='dimensionality of latent space')
-    parser.add_argument('--zdim_plot', default=2, type=int,
-                    help='dimensionality of latent space for final result')
 
     ARGS = parser.parse_args()
 
