@@ -37,7 +37,8 @@ def plot_from_csv_lstm():
     ax.set_ylabel("Accuracy")
     ax.set_title("Accuracy Palindrome Test over time LSTM")
     ax.grid()
-    plt.savefig('LSTM_acc_.pdf', format='pdf')
+    plt.show()
+    # plt.savefig('LSTM_acc_.pdf', format='pdf')
 
 
 
@@ -62,9 +63,10 @@ def plot_from_csv_rnn():
     ax.set_ylabel("Accuracy")
     ax.set_title("Accuracy Palindrome Test over time RNN")
     ax.grid()
-    plt.savefig('RNN_acc_.pdf', format='pdf')
+    # plt.savefig('RNN_acc_.pdf', format='pdf')
+    plt.show()
 
 if __name__ == "__main__":
 
-    # plot_from_csv_lstm()
+    plot_from_csv_lstm()
     plot_from_csv_rnn()

@@ -60,6 +60,7 @@ def train(config):
                 config.num_hidden,
                 config.num_classes,
                 config.batch_size,
+                config.gradient_check,
                 device=device)
 
     elif config.model_type=='LSTM':
@@ -69,6 +70,7 @@ def train(config):
                 config.num_hidden,
                 config.num_classes,
                 config.batch_size,
+                config.gradient_check,
                 device=device)
     
     optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
@@ -165,6 +167,7 @@ if __name__ == "__main__":
     parser.add_argument('--summary', type=str, default='runs/RNN', help='Specify where to write out tensorboard summaries')
     parser.add_argument('--tensorboard', type=int, default=0, help='Use tensorboard for one run, default do not show')
     parser.add_argument('--record_plot', type=int, default=0, help='Useful when training to save csv data to plot')
+    parser.add_argument('--gradient_check', type=int, default=0, help='Set to 1 to only record gradients')
     config = parser.parse_args()
 
     # Train the model

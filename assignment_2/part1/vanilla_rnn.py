@@ -26,7 +26,7 @@ import sys
 
 class VanillaRNN(nn.Module):
 
-    def __init__(self, seq_length, input_dim, num_hidden, num_classes, batch_size, device):
+    def __init__(self, seq_length, input_dim, num_hidden, num_classes, batch_size,gradient_check, device):
         super(VanillaRNN, self).__init__()
         # Initialization here ...
 
@@ -36,12 +36,13 @@ class VanillaRNN(nn.Module):
         self.input_dim = input_dim
         self.batch_size = batch_size
         self.num_hidden = num_hidden
+        self.gradient_check = gradient_check
         
         self.W_hx = nn.Parameter(torch.Tensor(num_hidden, input_dim), requires_grad=True)
         self.W_hh = nn.Parameter(torch.Tensor(num_hidden, num_hidden), requires_grad=True)
         self.W_hy = nn.Parameter(torch.Tensor(num_hidden, num_classes), requires_grad=True)
-
-        self.grad_hidden_list = []
+        if self.gradient_check:
+            self.grad_hidden_list = []
         
          # Xavier bound 
         bound = np.sqrt(1 / num_hidden)
@@ -62,9 +63,10 @@ class VanillaRNN(nn.Module):
         for step in range(self.seq_length):
            
             hidden = self.tanh(self.W_hx @ x[:,step].reshape(1, -1)  + self.W_hh @ hidden + self.b_h)
-            h = torch.zeros((self.num_hidden, x.shape[0]), requires_grad=True).to(self.device)
-            hidden = h + hidden
-            self.grad_hidden_list.append(h)
+            if self.gradient_check:
+                h = torch.zeros((self.num_hidden, x.shape[0]), requires_grad=True).to(self.device)
+                hidden = h + hidden
+                self.grad_hidden_list.append(h)
 
         out = self.W_hy.t() @ hidden + self.b_p
 
