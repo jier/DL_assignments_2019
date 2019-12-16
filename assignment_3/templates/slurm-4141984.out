@@ -1,0 +1,57 @@
+[Epoch 0] train elbo: 190.336937945822 val_elbo: 173.04210266885877
+[Epoch 1] train elbo: 168.28285974370854 val_elbo: 166.12339744084997
+[Epoch 2] train elbo: 163.81427872211427 val_elbo: 163.11417359943633
+[Epoch 3] train elbo: 161.28352601814757 val_elbo: 161.49866379363627
+[Epoch 4] train elbo: 159.46424085221938 val_elbo: 160.10511799100078
+[Epoch 5] train elbo: 158.1090469945727 val_elbo: 159.01209403895123
+[Epoch 6] train elbo: 157.02594907326466 val_elbo: 158.09786697580844
+[Epoch 7] train elbo: 156.10970632255535 val_elbo: 157.8687481457674
+[Epoch 8] train elbo: 155.40885523335098 val_elbo: 157.09006741680676
+[Epoch 9] train elbo: 154.66031441847076 val_elbo: 156.79527282714844
+[Epoch 10] train elbo: 154.0829784266479 val_elbo: 156.30240196517752
+[Epoch 11] train elbo: 153.5767983829274 val_elbo: 155.93170455739468
+[Epoch 12] train elbo: 153.11756604284886 val_elbo: 155.7204246038123
+[Epoch 13] train elbo: 152.64621615592782 val_elbo: 155.45656324941902
+[Epoch 14] train elbo: 152.2417695028398 val_elbo: 155.28202549415298
+[Epoch 15] train elbo: 151.9036920649926 val_elbo: 154.980134215536
+[Epoch 16] train elbo: 151.56639817181755 val_elbo: 154.83209363720084
+[Epoch 17] train elbo: 151.26436109616017 val_elbo: 154.58088375043266
+[Epoch 18] train elbo: 150.9523275624151 val_elbo: 154.61486642571944
+[Epoch 19] train elbo: 150.63850344294477 val_elbo: 154.45777815806716
+[Epoch 20] train elbo: 150.3783297721687 val_elbo: 153.9204991980444
+[Epoch 21] train elbo: 150.15574809901244 val_elbo: 154.12963191165198
+[Epoch 22] train elbo: 149.87726033008312 val_elbo: 153.76630643047864
+[Epoch 23] train elbo: 149.61074622268873 val_elbo: 153.77079502540298
+[Epoch 24] train elbo: 149.45113331826445 val_elbo: 153.95487724980222
+[Epoch 25] train elbo: 149.20209641712705 val_elbo: 153.65640027009988
+[Epoch 26] train elbo: 148.98987323731717 val_elbo: 153.6256339157684
+[Epoch 27] train elbo: 148.80883933455132 val_elbo: 153.47319552264636
+[Epoch 28] train elbo: 148.59803522212425 val_elbo: 153.45816793321055
+[Epoch 29] train elbo: 148.38104466587077 val_elbo: 153.27939885779273
+[Epoch 30] train elbo: 148.2072806980299 val_elbo: 153.3118349872058
+[Epoch 31] train elbo: 148.03863794663374 val_elbo: 153.28601170793365
+[Epoch 32] train elbo: 147.82863068641603 val_elbo: 152.9444883322414
+[Epoch 33] train elbo: 147.73533372805858 val_elbo: 153.0134491739394
+[Epoch 34] train elbo: 147.5406230331382 val_elbo: 152.98840911478936
+[Epoch 35] train elbo: 147.38483532371424 val_elbo: 152.9541481114641
+[Epoch 36] train elbo: 147.23714331897628 val_elbo: 153.12054385414606
+[Epoch 37] train elbo: 147.0623488560357 val_elbo: 153.04948946795886
+[Epoch 38] train elbo: 146.91931534789103 val_elbo: 152.91006295892257
+[Epoch 39] train elbo: 146.8194090704174 val_elbo: 153.11286636545688
+Traceback (most recent call last):
+  File "a3_vae_template.py", line 214, in <module>
+    main()
+  File "a3_vae_template.py", line 202, in main
+    save_elbo_plot(train_curve, val_curve, 'elbo.pdf')
+  File "a3_vae_template.py", line 151, in save_elbo_plot
+    plt.figure(figsize=(12, 6))
+  File "/hpc/eb/Debian9/matplotlib/2.1.1-foss-2017b-Python-3.6.3/lib/python3.6/site-packages/matplotlib-2.1.1-py3.6-linux-x86_64.egg/matplotlib/pyplot.py", line 539, in figure
+    **kwargs)
+  File "/hpc/eb/Debian9/matplotlib/2.1.1-foss-2017b-Python-3.6.3/lib/python3.6/site-packages/matplotlib-2.1.1-py3.6-linux-x86_64.egg/matplotlib/backend_bases.py", line 171, in new_figure_manager
+    return cls.new_figure_manager_given_figure(num, fig)
+  File "/hpc/eb/Debian9/matplotlib/2.1.1-foss-2017b-Python-3.6.3/lib/python3.6/site-packages/matplotlib-2.1.1-py3.6-linux-x86_64.egg/matplotlib/backends/backend_tkagg.py", line 1049, in new_figure_manager_given_figure
+    window = Tk.Tk(className="matplotlib")
+  File "/hpc/eb/Debian9/Tkinter/3.6.3-foss-2017b-Python-3.6.3/lib/python3.6/tkinter/__init__.py", line 2017, in __init__
+    self.tk = _tkinter.create(screenName, baseName, className, interactive, wantobjects, useTk, sync, use)
+_tkinter.TclError: no display name and no $DISPLAY environment variable
+srun: error: r31n1: task 0: Exited with exit code 1

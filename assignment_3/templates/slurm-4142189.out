@@ -1,0 +1,54 @@
+Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz to ./data/MNIST/raw/train-images-idx3-ubyte.gz
+0.00B [00:00, ?B/s]  0%|          | 0.00/9.91M [00:00<?, ?B/s]  0%|          | 16.4k/9.91M [00:00<01:14, 134kB/s]  1%|          | 98.3k/9.91M [00:00<00:58, 169kB/s]  3%|▎         | 336k/9.91M [00:00<00:41, 228kB/s]  13%|█▎        | 1.27M/9.91M [00:00<00:26, 321kB/s] 26%|██▌       | 2.54M/9.91M [00:01<00:16, 452kB/s] 61%|██████    | 6.05M/9.91M [00:01<00:06, 642kB/s] 99%|█████████▉| 9.82M/9.91M [00:01<00:00, 911kB/s]9.92MB [00:01, 7.32MB/s]                           
+Extracting ./data/MNIST/raw/train-images-idx3-ubyte.gz
+Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
+0.00B [00:00, ?B/s]  0%|          | 0.00/28.9k [00:00<?, ?B/s]32.8kB [00:00, 113kB/s]                    
+Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz
+Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw/t10k-images-idx3-ubyte.gz
+0.00B [00:00, ?B/s]  0%|          | 0.00/1.65M [00:00<?, ?B/s]  1%|          | 16.4k/1.65M [00:00<00:12, 133kB/s]  6%|▌         | 98.3k/1.65M [00:00<00:09, 168kB/s] 20%|██        | 336k/1.65M [00:00<00:05, 227kB/s]  76%|███████▌  | 1.25M/1.65M [00:00<00:01, 320kB/s]1.65MB [00:00, 1.84MB/s]                           
+Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz
+Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
+Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
+0.00B [00:00, ?B/s]  0%|          | 0.00/4.54k [00:00<?, ?B/s]8.19kB [00:00, 42.9kB/s]                   
+Processing...
+Done!
+[Epoch 0] train bpd: 2.7692519100533923 val_bpd: 2.1190727435785632
+[Epoch 1] train bpd: 2.0502941104427674 val_bpd: 2.0176167822546285
+[Epoch 2] train bpd: 1.984544195649964 val_bpd: 1.9812779213417098
+[Epoch 3] train bpd: 1.9542173705275345 val_bpd: 1.9460870170332134
+[Epoch 4] train bpd: 1.9345974469009717 val_bpd: 1.9311456192739005
+[Epoch 5] train bpd: 1.9203303297349856 val_bpd: 1.9150565478307335
+[Epoch 6] train bpd: 1.905652335576247 val_bpd: 1.9203087990014276
+[Epoch 7] train bpd: 1.8945596507435079 val_bpd: 1.896299875215561
+[Epoch 8] train bpd: 1.892032645209946 val_bpd: 1.8947862444871977
+[Epoch 9] train bpd: 1.8801337066070485 val_bpd: 1.8931346096549928
+[Epoch 10] train bpd: 1.8807694996331954 val_bpd: 1.8867069799104021
+[Epoch 11] train bpd: 1.8727319235363915 val_bpd: 1.878030725921538
+[Epoch 12] train bpd: 1.8627191098852747 val_bpd: 1.8794362809927312
+[Epoch 13] train bpd: 1.8614717390619893 val_bpd: 1.8647605755031866
+[Epoch 14] train bpd: 1.8617123444165151 val_bpd: 1.8786296303788617
+[Epoch 15] train bpd: 1.8538235149112259 val_bpd: 1.858924308036945
+[Epoch 16] train bpd: 1.8518025316986741 val_bpd: 1.8635433545410902
+[Epoch 17] train bpd: 1.8518251009538007 val_bpd: 1.8577510478130337
+[Epoch 18] train bpd: 1.84522568260492 val_bpd: 1.8601766182580937
+[Epoch 19] train bpd: 1.8437397557309758 val_bpd: 1.857589487373013
+[Epoch 20] train bpd: 1.8413034639195152 val_bpd: 1.856191885355389
+[Epoch 21] train bpd: 1.8388629357078694 val_bpd: 1.8582001479618995
+[Epoch 22] train bpd: 1.8370004371376718 val_bpd: 1.8447800667027756
+[Epoch 23] train bpd: 1.8348636031281633 val_bpd: 1.8428713807626886
+[Epoch 24] train bpd: 1.8331469614551985 val_bpd: 1.8334841047338222
+[Epoch 25] train bpd: 1.8287371853548235 val_bpd: 1.8467256574273718
+[Epoch 26] train bpd: 1.831348638283498 val_bpd: 1.8422939853771287
+[Epoch 27] train bpd: 1.8300750642880377 val_bpd: 1.8407163619969609
+[Epoch 28] train bpd: 1.825432087024346 val_bpd: 1.839718728625657
+[Epoch 29] train bpd: 1.8247089622913226 val_bpd: 1.8333193880944945
+[Epoch 30] train bpd: 1.8227605964178701 val_bpd: 1.8281742671428898
+[Epoch 31] train bpd: 1.8215652031316991 val_bpd: 1.836986185098632
+[Epoch 32] train bpd: 1.8200162882426403 val_bpd: 1.8348619733972207
+[Epoch 33] train bpd: 1.818194931125127 val_bpd: 1.8316269288194518
+[Epoch 34] train bpd: 1.819331783073389 val_bpd: 1.8278819220495144
+[Epoch 35] train bpd: 1.8166489992273216 val_bpd: 1.8269747379574492
+[Epoch 36] train bpd: 1.8181422495547108 val_bpd: 1.8306605944246088
+[Epoch 37] train bpd: 1.8151367120116888 val_bpd: 1.8288251962854567
+[Epoch 38] train bpd: 1.8130184606059385 val_bpd: 1.8260784754523554
+[Epoch 39] train bpd: 1.8143133594184564 val_bpd: 1.8273191944604634
