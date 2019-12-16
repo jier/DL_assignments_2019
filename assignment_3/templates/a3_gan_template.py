@@ -82,7 +82,7 @@ def train(dataloader, discriminator, generator, optimizer_G, optimizer_D, device
     for epoch in range(args.n_epochs):
         for i, (imgs, _) in enumerate(dataloader):
 
-            if device != 'cpu':
+            if torch.cuda.is_available():
                 imgs.cuda()
             data_img  = imgs.view(-1, 784).to(device)
             batch_size = data_img.shape[0]
@@ -114,6 +114,7 @@ def train(dataloader, discriminator, generator, optimizer_G, optimizer_D, device
 
             generator_loss.append(loss_gen.item())
             discriminator_loss.append(loss_dscr.item())
+            # Does not change??
             positives = (real > 0.5).sum().item()
             negatives = (fake <= 0.5).sum().item()
 
@@ -171,7 +172,7 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # Start training
-    train(dataloader, discriminator, generator, optimizer_G, optimizer_D, device)
+    train(dataloader, discriminator, generator, optimizer_G, optimizer_D, device=device)
 
     # You can save your generator here to re-use it to generate images for your
     # report, e.g.:

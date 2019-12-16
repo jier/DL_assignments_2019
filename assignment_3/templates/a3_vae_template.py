@@ -58,12 +58,13 @@ class Decoder(nn.Module):
 
 class VAE(nn.Module):
 
-    def __init__(self, hidden_dim=500, z_dim=20):
+    def __init__(self,device, hidden_dim=500, z_dim=20):
         super().__init__()
 
         self.z_dim = z_dim
         self.encoder = Encoder(hidden_dim, z_dim)
         self.decoder = Decoder(hidden_dim, z_dim)
+        self.device = device
 
 
     def forward(self, input):
@@ -98,14 +99,14 @@ class VAE(nn.Module):
         used to plot the data manifold).
         """
         #  Create meshgrid of n_samples by z_dim
-        sample_z = torch.randn(n_samples, self.z_dim)
+        sample_z = torch.randn(n_samples, self.z_dim).to(self.device)
      
         im_means = self.decoder(sample_z)
         sampled_ims = torch.bernoulli(im_means)
         return sampled_ims, im_means
 
 
-def epoch_iter(model, data, optimizer):
+def epoch_iter(model, data, optimizer,device):
     """
     Perform a single epoch for either the training or validation.
     use model.training to determine if in 'training mode' or not.
@@ -114,7 +115,7 @@ def epoch_iter(model, data, optimizer):
     """
     average_epoch_elbo = 0.0
     for _, x_batch in enumerate(data):
-        x_batch = x_batch.view(-1, 784)
+        x_batch = x_batch.view(-1, 784).to(device)
 
         if model.training:
             optimizer.zero_grad()
@@ -128,17 +129,17 @@ def epoch_iter(model, data, optimizer):
     return average_epoch_elbo/len(data)
 
 
-def run_epoch(model, data, optimizer):
+def run_epoch(model, data, optimizer,device):
     """
     Run a train and validation epoch and return average elbo for each.
     """
     traindata, valdata = data
 
     model.train()
-    train_elbo = epoch_iter(model, traindata, optimizer)
+    train_elbo = epoch_iter(model, traindata, optimizer,device)
 
     model.eval()
-    val_elbo = epoch_iter(model, valdata, optimizer)
+    val_elbo = epoch_iter(model, valdata, optimizer,device)
 
     return train_elbo, val_elbo
 
@@ -156,12 +157,13 @@ def save_elbo_plot(train_curve, val_curve, filename):
 
 def main():
     data = bmnist()[:2]  # ignore test split
-    model = VAE(z_dim=ARGS.zdim)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model = VAE(z_dim=ARGS.zdim, device=device)
     optimizer = torch.optim.Adam(model.parameters())
 
     train_curve, val_curve = [], []
     for epoch in range(ARGS.epochs):
-        elbos = run_epoch(model, data, optimizer)
+        elbos = run_epoch(model, data, optimizer,device)
         train_elbo, val_elbo = elbos
         train_curve.append(train_elbo)
         val_curve.append(val_elbo)
@@ -181,12 +183,12 @@ def main():
     #  if required (i.e., if zdim == 2). You can use the make_grid
     #  functionality that is already imported.
     # --------------------------------------------------------------------
-    if ARGS.zdim == 2:
+    if ARGS.zdim_plot == 2:
         x = norm.ppf(np.linspace(1e-9, 0.99, 20))
         y = norm.ppf(np.linspace(1e-9, 0.99, 20))
         mesh = np.array(np.meshgrid(x, y))
 
-        grid_tensor = torch.from_numpy(mesh.T.reshape(-1, ARGS.zdim)).float()
+        grid_tensor = torch.from_numpy(mesh.T.reshape(-1, ARGS.zdim_plot)).float().to(device)
         sampled_final_img = model.decoder(grid_tensor)
         sampled_final_img = sampled_final_img.view(-1, 1, 28, 28)
 
@@ -202,6 +204,8 @@ if __name__ == "__main__":
                         help='max number of epochs')
     parser.add_argument('--zdim', default=20, type=int,
                         help='dimensionality of latent space')
+    parser.add_argument('--zdim_plot', default=2, type=int,
+                    help='dimensionality of latent space for final result')
 
     ARGS = parser.parse_args()
 

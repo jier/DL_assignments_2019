@@ -171,20 +171,43 @@
       \end{itemize}
   \section{Generative Normalizing Flows}
       \subsection{Change of variables for Neural Networks}
-        \begin{itemize}
-          \item Question 3.1
-          \item Question 3.2
-          \item Question 3.3
-          \item Question 3.4
+        \begin{itemize} 
+          \item Question 3.1 \\
+          If the mapping of $f$ is an invertible smooth mapping and $x \in \mathbb{R}^m$ is a multivariate random variable then we will require the determinant of \textbf{Jacobian} of the input data instead of just the derivatives, formally:
+          \begin{align*}
+            z &= f(x); & x = f^{-1}(z); && p(z) = p( f^{-1}(z)) \det \Big| \frac{\partial f^{-1}}{\partial z} \Big| \\
+            p(x) &= p(z) \det \Big| \frac{ \partial f}{\partial x} \Big|^{-1} & \text{change of variables}
+          \end{align*} where $ \frac{ \partial f}{\partial x}$ is the Jacobian. Equivallently for our objective we will obtain the following:
+          \begin{align*}
+            \log p(x) &= \log p(z) + \sum_{l = 1}^{L} \log \det \Big| \frac{\partial h_l}{\partial h_{l -1}}\Big| \\
+            &= p(z) +  \sum_{l = 1}^{L} \log \det \Big|J^TJ \Big|
+          \end{align*} with $h_0 = x$ and $h_L = z$. 
+          \item Question 3.2 \\
+          This equation is computable if for each preceding dimensions the Jacobian is easily computed. Formally put, each preceding $h_{l-1}$ has to have a defined determinant and be invertible. 
+          \item Question 3.3 \\
+          Calculating $N \times N$ Jacobians are expensive operations which have complexity $O(N^3)$ which is not feasible for higher dimensional data. When we sample data depending of the complexity of the original data, the sampling may be fast or slow.
+          \item Question 3.4 \\
+          The consequence might be that the model will encourage degenerate solutions  that puts probability mass on discrete data points, so the representation of the true distribution of the original data is not entirely generated. To solve this \textbf{FLOW++} offered to add noise from an uniform distribution in the input data such that no probability mass is gathered around specific values. This change the discrete integers input to continuous random variables. 
         \end{itemize}
       \subsection{The coupling-layers of Real NVP}
         \begin{itemize}
           \item Question 3.5
+          \begin{enumerate}
+            \item Bijective mapping of input data
+            \item Rate of transformation of data input depending on  a part of the data, in other words the Jacobian of some input of the data.
+            \item This is the scaling of the input image conditioned on only previous data input and that in fact may be complex and this is the part of the neural network output.
+            \item This is the determinant of every previous input data transformation, so this means it contains on its diagonal elements of scaling of a part of input data. 
+            \item Because of the presence of the $\exp$ in the diagonal entries of the Jacobian and the restriction to be invertible the determinant of the Jacobian is positive indeed. 
+            \item Taking the $\log$ is equivalent of taking the $\exp$ thus the diagonal entries of the Jacobian contains exponential term. 
+            \item This is sampled input from the latent space and due to the fact that the set-up of the bijective function the backward computation of this statement is the reverse order of the original bijective function. 
+          \end{enumerate}
         \end{itemize}
       \subsection{Building a flow-based model}
         \begin{itemize}
-          \item Question 3.6
-          \item Question 3.7
+          \item Question 3.6  \\
+          During training data input is conditioned, from a multivariate distribution to the product of one-dimensional conditional densities and are fed to the network, a part of the total image. In a recursive way the current input is fed through successive coupling layers with each layer alternating its input source from the previous conditioned data input which was left unchanged. After K layers the latent vector is obtained and its log-probability calculated from the latent distribution. This result is added to the sum of logged of the determinants to compute the negative log-likelihood of the input data, this will be taken as a loss and back-propagated. After training the the input may be another image or larger data set and the coupling layers will have classification power as each contains information of loss at a finer scale. The output will be a distribution of the representation of the input data. 
+          \item Question 3.7 \\ 
+          See code \begin{verbatim} a3_nf_template.py\end{verbatim}
           \item Question 3.8
         \end{itemize}
   \section{Conclusion}
