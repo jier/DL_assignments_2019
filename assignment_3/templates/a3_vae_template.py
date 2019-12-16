@@ -195,7 +195,7 @@ def main():
         final_grid = make_grid(sampled_final_img, nrow=20)
         plt.imsave('FINAL_RESULT.pdf', final_grid.permute(1, 2, 0).detach().numpy())
 
-    # save_elbo_plot(train_curve, val_curve, 'elbo.pdf')
+    save_elbo_plot(train_curve, val_curve, 'elbo.pdf')
 
 
 if __name__ == "__main__":
