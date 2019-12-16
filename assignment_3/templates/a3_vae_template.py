@@ -176,8 +176,8 @@ def main():
         sampled_img = model.sample(ARGS.zdim)[0]
         sampled_img = sampled_img.view(ARGS.zdim, 1, 28, 28)
         grid = make_grid(sampled_img, nrow=5)
-        if epoch in [0, ARGS.epochs/2, ARGS.epochs -1]:
-            plt.imsave('VAE_EPOCH' + str(epoch) +'.png', grid.permute(1, 2, 0).detach().numpy())
+        if epoch  == 0 or epoch == ARGS.epochs/2 or epoch == ARGS.epochs -1:
+            plt.imsave('images/VAE_EPOCH_' + str(epoch) +'.png', grid.permute(1, 2, 0).detach().numpy())
     # --------------------------------------------------------------------
     #  Add functionality to plot plot the learned data manifold after
     #  if required (i.e., if zdim == 2). You can use the make_grid
