@@ -28,6 +28,7 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{subfigure}
 \usepackage[shortlabels]{enumitem}
 \title{Deep Learning Homework assignment}
 
@@ -144,10 +145,32 @@
     \end{itemize}
   \subsection{Putting things together: Building VAE}
     \begin{itemize}
-      \item Question 1.12
-      \item Question 1.13
-      \item Question 1.14
-      \item Qeustion 1.15
+      \item Question 1.12 \\
+      The VAE is implemented with one linear layer of followed by two similar layers that are used in the encoder as mean and log variance given an input data. The Decoder receives from the latent space $z$ according to its dimension an input that passes through a linear layer hereafter with as final activation a sigmoid, this is a different approach than the original paper. This choice is made because only $tanh$ activations functions where used in the Decoder part to prevent exploding gradients, we use a  \textbf{ReLU} activation in the hidden layers of the encoder as decoder part to prevent this. Moreover we have binary input images that justify the choice of activation function. The reconstruction loss is summed and normalized rather with the built-in function who does not coincide with the calculation $\log(0.5) * (28*28)$ which should be roughly the answer with the first epoch. 
+      \item Question 1.13 \\
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=\linewidth]{elbo.pdf}
+        \caption{ELBO in VAE in 40 epochs}
+        \label{fig:elbo_vae}
+      \end{figure}
+      \item Question 1.14 \\
+      \begin{figure}[htbp]
+        \centering
+        \subfigure[]{\includegraphics[width=0.3\textwidth]{VAE_EPOCH_0_20.png}}
+        \subfigure[]{\includegraphics[width=0.3\textwidth]{VAE_EPOCH_20_20.png}}
+        \subfigure[]{\includegraphics[width=0.3\textwidth]{VAE_EPOCH_39_20.png}}
+        \caption{(a) First epoch (b) Midway epoch (c) Final epoch}
+        \label{fig:progress_vae}
+      \end{figure}
+      \item Qeustion 1.15 \\
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=\linewidth]{manifold.png}
+        \caption{Manifold for a 2-dimensional latent space}
+        \label{fig:manifold}
+        As expected this manifold from \ref{fig:manifold} is not as clear as from the Figure \ref{fig:progress_vae} where a bigger $z$ latent space is used. This result coincide with the original paper, where a two dimensional latent space is not sufficient to approximate the probability of the data input, while higher values are. 
+      \end{figure}
     \end{itemize}
 \section{Generative Adversarial Networks}
     \begin{itemize}
@@ -165,8 +188,17 @@
       \end{itemize}
     \subsection{Building GAN}
       \begin{itemize}
-        \item Question 2.5
-        \item Question 2.6
+        \item Question 2.5 \\
+        The GAN is implemented as proposed in the template. The non-linearity in the generator needs to be tahn as the distribution has to be between -1 en 1 while the discriminator has to be sigmoid activation function as it ouputs probabilities. The generator increases fast and clipping the norm did not solve the problem and using a batchnorm for the generator made the values converge quickly to NaN. Moreover the initialisation of the generator and discriminator has to actively pass the data otherwise nothing is processed. 
+        \item Question 2.6  \\
+        \begin{figure}[htbp]
+          \centering
+          \subfigure{\includegraphics[width=0.3\textwidth]{0_0.png}}
+          \subfigure{\includegraphics[width=0.3\textwidth]{100_94000.png}}
+          \subfigure{\includegraphics[width=0.3\textwidth]{199_187599.png}}
+          \caption{Evolution of GAN zeroth epcochs, 100 epochs and final}
+          \label{<label>}
+        \end{figure}
         \item Question 2.7
       \end{itemize}
   \section{Generative Normalizing Flows}
@@ -209,10 +241,19 @@
           \item Question 3.7 \\ 
           See code \begin{verbatim} a3_nf_template.py\end{verbatim}
           \item Question 3.8
+          \begin{figure}[htbp]
+            \centering
+            \subfigure{\includegraphics[width=0.3\textwidth]{nfs_0.png}}
+            \subfigure[]{\includegraphics[width=0.3\textwidth]{nfs_20.png}}
+            \subfigure[]{\includegraphics[width=0.3\textwidth]{nfs_39.png}}
+            \caption{Evolution NF zeroth epoch halway and the end}
+            \label{<label>}
+          \end{figure}
         \end{itemize}
   \section{Conclusion}
         \begin{itemize}
-          \item Question 4.1
+          \item Question 4.1 \\
+          We note that from alll the generative models, the GANs performs best producing clear images while the other two with much more computation the same could have been achieved. 
         \end{itemize}
     
 

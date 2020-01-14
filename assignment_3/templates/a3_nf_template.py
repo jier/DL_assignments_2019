@@ -272,12 +272,12 @@ def main():
         #  You can use the make_grid functionality that is already imported.
         #  Save grid to images_nfs/
         # --------------------------------------------------------------------
-        if epoch == 0 or epoch == 20 or epoch == ARGS.epochs -1:
-            img = model.sample(25).detach().view(25, 1,  28, 28)
-            grid = make_grid(img, nrow=5, normalize=True).permute(1, 2, 0).detach().cpu().numpy()
-            plt.imsave('images_nfs/nfs_{}.png'.format(epoch), grid)
+        # if epoch == 0 or epoch == 20 or epoch == ARGS.epochs -1:
+        #     img = model.sample(25).detach().view(25, 1,  28, 28)
+        #     grid = make_grid(img, nrow=5, normalize=True).permute(1, 2, 0).detach().cpu().numpy()
+        #     plt.imsave('images_nfs/nfs_{}.png'.format(epoch), grid)
 
-    # save_bpd_plot(train_curve, val_curve, 'nfs_bpd.pdf')
+    save_bpd_plot(train_curve, val_curve, 'nfs_bpd.pdf')
 
 
 if __name__ == "__main__":
